@@ -2,7 +2,9 @@
 A Windows version CNC tool.
 
 # hardware connection
+<pre><code>
 [nc2cnc run on PC with serial port ] ----- [sCNC board] ----- [Step motor driver] ---- [Step Motor]
+</code></pre>
 
 # sCNC protocol
 <pre><code>
