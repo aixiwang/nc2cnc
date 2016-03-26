@@ -5,6 +5,7 @@ A Windows version CNC tool.
 [nc2cnc run on PC with serial port ] ----- [sCNC board] ----- [Step motor driver] ---- [Step Motor]
 
 # sCNC protocol
+<pre><code>
 host -> sCNC
 --------------------------------------------------
 [MMPPPPPP]
@@ -27,7 +28,7 @@ M,P -:   [0-9],[A-F]
 sCNC -> host
 ---------------------------------------------------
 OK  -- !
-
+</code></pre>
 # Contact me
 aixi.wang@hotmail.com
 
