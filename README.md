@@ -29,7 +29,8 @@ M,P -:   [0-9],[A-F]
 [0FNNNNN]   -  z us/step
 sCNC -> host
 ---------------------------------------------------
-OK  -- !
+ ! -- OK
+ 
 </code></pre>
 # Contact me
 aixi.wang@hotmail.com
