@@ -1,0 +1,1 @@
+nc2cnc.exe nc.txt SIM 
