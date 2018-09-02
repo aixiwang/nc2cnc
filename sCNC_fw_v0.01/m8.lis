@@ -1,0 +1,1939 @@
+                        .module m8.c
+                        .area data(ram, con, rel)
+ 0000           _bInputFromHostState::
+ 0000                   .blkb 1
+                        .area idata
+ 0000 00                .byte 0
+                        .area data(ram, con, rel)
+ 0001                   .dbfile C:\DOCUME~1\www\桌面\电热水控制板\固件\v001\m8.c
+ 0001                   .dbsym e bInputFromHostState _bInputFromHostState c
+ 0001           _bPwrOnCnt::
+ 0001                   .blkb 1
+                        .area idata
+ 0001 00                .byte 0
+                        .area data(ram, con, rel)
+ 0002                   .dbfile C:\DOCUME~1\www\桌面\电热水控制板\固件\v001\m8.c
+ 0002                   .dbsym e bPwrOnCnt _bPwrOnCnt c
+                        .area text(rom, con, rel)
+ 0000                   .dbfile C:\DOCUME~1\www\桌面\电热水控制板\固件\v001\m8.c
+ 0000                   .dbfunc e main _main fV
+ 0000           ;              i -> <dead>
+                        .even
+ 0000           _main::
+ 0000                   .dbline -1
+ 0000                   .dbline 29
+ 0000           ; //ICC-AVR application builder : 2007-05-22 9:48:28
+ 0000           ; // Target : M8
+ 0000           ; // Crystal: 11.059Mhz
+ 0000           ; 
+ 0000           ; #include <iom8v.h>
+ 0000           ; #include <macros.h>
+ 0000           ; 
+ 0000           ; #include "typedef.h"
+ 0000           ; #include "lcd1602.H"
+ 0000           ; #include "m8.h"
+ 0000           ; #include "serial.h"
+ 0000           ; 
+ 0000           ; 
+ 0000           ; byte  bInputFromHostState = 0;
+ 0000           ; byte  bPwrOnCnt=0;
+ 0000           ; byte  bTaskFlag;
+ 0000           ; 
+ 0000           ; byte  in_buffer[32];
+ 0000           ; 
+ 0000           ; byte  bitIsHighHalfByte;
+ 0000           ; byte  bHighHalfByte;
+ 0000           ; byte  bHandWriteData[5];
+ 0000           ; byte  bRfSendPackage[8];
+ 0000           ; 
+ 0000           ; 
+ 0000           ; //--------------------------
+ 0000           ; // main
+ 0000           ; //--------------------------
+ 0000           ; void main(){
+ 0000                   .dbline 32
+ 0000           ;       int i;
+ 0000           ;        
+ 0000           ;       init_devices();
+ 0000 68D0              rcall _init_devices
+ 0002                   .dbline 34
+ 0002           ;       // init variables
+ 0002           ;       bInputFromHostState = 0;
+ 0002 2224              clr R2
+ 0004 20920000          sts _bInputFromHostState,R2
+ 0008                   .dbline 35
+ 0008           ;       show_new_version();
+ 0008 01D1              rcall _show_new_version
+ 000A                   .dbline 37
+ 000A           ; 
+ 000A           ;       bPwrOnCnt = 0;  
+ 000A 2224              clr R2
+ 000C 20920100          sts _bPwrOnCnt,R2
+ 0010 1DC0              rjmp L3
+ 0012           L2:
+ 0012                   .dbline 76
+ 0012           ; 
+ 0012           ; /*    
+ 0012           ;       init_lcd1602();
+ 0012           ; 
+ 0012           ;       for(i=0; i<16; i++)
+ 0012           ;       {
+ 0012           ;               lcd_line1[i] = ' ';
+ 0012           ;               lcd_line2[i] = ' ';             
+ 0012           ;       }
+ 0012           ; 
+ 0012           ; 
+ 0012           ;       lcd_line1[3] = ' ';
+ 0012           ;       lcd_line1[4] = 'S';
+ 0012           ;       lcd_line1[5] = 'c';
+ 0012           ;       lcd_line1[6] = 'a';
+ 0012           ;       lcd_line1[7] = 'n';
+ 0012           ;       lcd_line1[8] = 'B';
+ 0012           ;       lcd_line1[9] = 'O';
+ 0012           ;       lcd_line1[10] = 'X';
+ 0012           ;       lcd_line1[11] = ' ';    
+ 0012           ;       display_162();
+ 0012           ;               
+ 0012           ;       for(i=0; i<100; i++)
+ 0012           ;               delay5ms();
+ 0012           ;               
+ 0012           ;       lcd_line1[3] = 'L';
+ 0012           ;       lcd_line1[4] = 'o';
+ 0012           ;       lcd_line1[5] = 'a';
+ 0012           ;       lcd_line1[6] = 'd';
+ 0012           ;       lcd_line1[7] = 'i';
+ 0012           ;       lcd_line1[8] = 'n';
+ 0012           ;       lcd_line1[9] = 'g';
+ 0012           ;       lcd_line1[10] = '.';
+ 0012           ;       lcd_line1[11] = '.';
+ 0012           ;       lcd_line1[12] = '.';
+ 0012           ;       display_162();          
+ 0012           ; */
+ 0012           ; 
+ 0012           ;  while (1) {
+ 0012                   .dbline 84
+ 0012           ;  
+ 0012           ; 
+ 0012           ;       ///////////////////////////////////////////////////////////////////
+ 0012           ;       // 1 sec task hook 
+ 0012           ;       //////////////////////////////////////////////////////////////////
+ 0012           ;       //WDR();
+ 0012           ; 
+ 0012           ;       if (( bTaskFlag & BIT_1SEC_TASK) == BIT_1SEC_TASK)
+ 0012 80913000          lds R24,_bTaskFlag
+ 0016 8270              andi R24,2
+ 0018 8230              cpi R24,2
+ 001A 51F4              brne L5
+ 001C                   .dbline 86
+ 001C           ;       // 1 sec task
+ 001C           ;       {
+ 001C                   .dbline 87
+ 001C           ;               bTaskFlag &= ~BIT_1SEC_TASK;
+ 001C 80913000          lds R24,_bTaskFlag
+ 0020 8D7F              andi R24,253
+ 0022 80933000          sts _bTaskFlag,R24
+ 0026                   .dbline 88
+ 0026           ;               bPwrOnCnt++;
+ 0026 80910100          lds R24,_bPwrOnCnt
+ 002A 8F5F              subi R24,255    ; addi 1
+ 002C 80930100          sts _bPwrOnCnt,R24
+ 0030                   .dbline 97
+ 0030           ;               
+ 0030           ;               //FLASH_LED;
+ 0030           ;               
+ 0030           ;               //lcd_line1[0] = hexit(bPwrOnCnt >> 4);
+ 0030           ;               //lcd_line1[1] = hexit(bPwrOnCnt & 0xf);
+ 0030           ;               
+ 0030           ;               //bTaskFlag |= BIT_UPDATE_LCD;
+ 0030           ;               
+ 0030           ;       }
+ 0030           L5:
+ 0030                   .dbline 103
+ 0030           ; 
+ 0030           ;       /////////////////////////////////////////////////////////////////
+ 0030           ;       // Misc things to do
+ 0030           ;       /////////////////////////////////////////////////////////////////
+ 0030           ;       
+ 0030           ;       if (( bTaskFlag & BIT_UPDATE_LCD) == BIT_UPDATE_LCD)
+ 0030 80913000          lds R24,_bTaskFlag
+ 0034 8470              andi R24,4
+ 0036 8430              cpi R24,4
+ 0038 49F4              brne L7
+ 003A                   .dbline 105
+ 003A           ;       // 1 sec task
+ 003A           ;       {
+ 003A                   .dbline 106
+ 003A           ;               bTaskFlag &= ~BIT_UPDATE_LCD;
+ 003A 80913000          lds R24,_bTaskFlag
+ 003E 8B7F              andi R24,251
+ 0040 80933000          sts _bTaskFlag,R24
+ 0044                   .dbline 109
+ 0044           ;               //FLASH_LED;
+ 0044           ; 
+ 0044           ;               display_162();
+ 0044 00D0              rcall _display_162
+ 0046                   .dbline 111
+ 0046           ;               //uart_tx('!');
+ 0046           ;               bInputFromHostState = 0;
+ 0046 2224              clr R2
+ 0048 20920000          sts _bInputFromHostState,R2
+ 004C                   .dbline 113
+ 004C           ; 
+ 004C           ;       }
+ 004C           L7:
+ 004C                   .dbline 118
+ 004C           L3:
+ 004C                   .dbline 76
+ 004C E2CF              rjmp L2
+ 004E           X0:
+ 004E                   .dbline -2
+ 004E           L1:
+ 004E                   .dbline 0 ; func end
+ 004E 0895              ret
+ 0050                   .dbsym l i 1 I
+ 0050                   .dbend
+ 0050                   .dbfunc e port_init _port_init fV
+                        .even
+ 0050           _port_init::
+ 0050                   .dbline -1
+ 0050                   .dbline 127
+ 0050           ;       /////////////////////////////////////////////////////////////////
+ 0050           ;       // Enter Idle
+ 0050           ;       /////////////////////////////////////////////////////////////////
+ 0050           ; 
+ 0050           ;   }
+ 0050           ;  
+ 0050           ;        
+ 0050           ; }
+ 0050           ; 
+ 0050           ; //--------------------------
+ 0050           ; // port_init
+ 0050           ; //--------------------------
+ 0050           ; void port_init(void)
+ 0050           ; {
+ 0050                   .dbline 128
+ 0050           ;  PORTB = 0x00;
+ 0050 2224              clr R2
+ 0052 28BA              out 0x18,R2
+ 0054                   .dbline 129
+ 0054           ;  DDRB  = 0xFF;
+ 0054 8FEF              ldi R24,255
+ 0056 87BB              out 0x17,R24
+ 0058                   .dbline 130
+ 0058           ;  PORTC = 0x00; //m103 output only
+ 0058 25BA              out 0x15,R2
+ 005A                   .dbline 131
+ 005A           ;  DDRC  = 0x7F;
+ 005A 8FE7              ldi R24,127
+ 005C 84BB              out 0x14,R24
+ 005E                   .dbline 132
+ 005E           ;  PORTD = 0x00;
+ 005E 22BA              out 0x12,R2
+ 0060                   .dbline 133
+ 0060           ;  DDRD  = 0x22;
+ 0060 82E2              ldi R24,34
+ 0062 81BB              out 0x11,R24
+ 0064                   .dbline -2
+ 0064           L9:
+ 0064                   .dbline 0 ; func end
+ 0064 0895              ret
+ 0066                   .dbend
+ 0066                   .dbfunc e watchdog_init _watchdog_init fV
+                        .even
+ 0066           _watchdog_init::
+ 0066                   .dbline -1
+ 0066                   .dbline 142
+ 0066           ; }
+ 0066           ; 
+ 0066           ; //--------------------------
+ 0066           ; // watchdog_init
+ 0066           ; //--------------------------
+ 0066           ; //Watchdog initialize
+ 0066           ; // prescale: 2048K
+ 0066           ; void watchdog_init(void)
+ 0066           ; {
+ 0066                   .dbline 143
+ 0066           ;  WDR(); //this prevents a timout on enabling
+ 0066 A895              wdr
+ 0068                   .dbline 144
+ 0068           ;  WDTCR = 0x0F; //WATCHDOG ENABLED - dont forget to issue WDRs
+ 0068 8FE0              ldi R24,15
+ 006A 81BD              out 0x21,R24
+ 006C                   .dbline -2
+ 006C           L10:
+ 006C                   .dbline 0 ; func end
+ 006C 0895              ret
+ 006E                   .dbend
+ 006E                   .dbfunc e timer0_init _timer0_init fV
+                        .even
+ 006E           _timer0_init::
+ 006E                   .dbline -1
+ 006E                   .dbline 156
+ 006E           ; }
+ 006E           ; 
+ 006E           ;          // 11.0592m clock
+ 006E           ; //--------------------------
+ 006E           ; // timer0_init
+ 006E           ; //--------------------------
+ 006E           ; //TIMER0 initialize - prescale:1024
+ 006E           ; // WGM: Normal
+ 006E           ; // desired value: 10mSec
+ 006E           ; 
+ 006E           ; void timer0_init(void)
+ 006E           ; {
+ 006E                   .dbline 157
+ 006E           ;  TCCR0 = 0x00; //stop
+ 006E 2224              clr R2
+ 0070 23BE              out 0x33,R2
+ 0072                   .dbline 158
+ 0072           ;  TCNT0 = 0x95; //set count
+ 0072 85E9              ldi R24,149
+ 0074 82BF              out 0x32,R24
+ 0076                   .dbline 159
+ 0076           ;  TCCR0 = 0x05; //start timer
+ 0076 85E0              ldi R24,5
+ 0078 83BF              out 0x33,R24
+ 007A                   .dbline -2
+ 007A           L11:
+ 007A                   .dbline 0 ; func end
+ 007A 0895              ret
+ 007C                   .dbend
+                        .area vector(rom, abs)
+                        .org 18
+ 0012 3EC0              rjmp _timer0_ovf_isr
+                        .area text(rom, con, rel)
+ 007C                   .dbfile C:\DOCUME~1\www\桌面\电热水控制板\固件\v001\m8.c
+                        .area bss(ram, con, rel)
+ 0000                   .dbfile C:\DOCUME~1\www\桌面\电热水控制板\固件\v001\m8.c
+ 0000           L13:
+ 0000                   .blkb 1
+                        .area text(rom, con, rel)
+ 007C                   .dbfile C:\DOCUME~1\www\桌面\电热水控制板\固件\v001\m8.c
+ 007C                   .dbfunc e timer0_ovf_isr _timer0_ovf_isr fV
+ 007C                   .dbsym s bT0SecCnt L13 c
+                        .even
+ 007C           _timer0_ovf_isr::
+ 007C 00D0              rcall push_lset
+ 007E                   .dbline -1
+ 007E                   .dbline 167
+ 007E           ; }
+ 007E           ; 
+ 007E           ; //--------------------------
+ 007E           ; // 10ms timer
+ 007E           ; //--------------------------
+ 007E           ; #pragma interrupt_handler timer0_ovf_isr:10
+ 007E           ; void timer0_ovf_isr(void)
+ 007E           ; {
+ 007E                   .dbline 170
+ 007E           ;  static byte bT0SecCnt;
+ 007E           ; 
+ 007E           ;  TCNT0 = 0x95; //reload counter value
+ 007E 85E9              ldi R24,149
+ 0080 82BF              out 0x32,R24
+ 0082                   .dbline 172
+ 0082           ; 
+ 0082           ;  if (bT0SecCnt < 50)
+ 0082 80910000          lds R24,L13
+ 0086 8233              cpi R24,50
+ 0088 20F4              brsh L14
+ 008A                   .dbline 173
+ 008A           ;       bT0SecCnt++;
+ 008A 8F5F              subi R24,255    ; addi 1
+ 008C 80930000          sts L13,R24
+ 0090 08C0              rjmp L15
+ 0092           L14:
+ 0092                   .dbline 175
+ 0092           ;  else
+ 0092           ;  {
+ 0092                   .dbline 176
+ 0092           ;       bT0SecCnt = 0;
+ 0092 2224              clr R2
+ 0094 20920000          sts L13,R2
+ 0098                   .dbline 177
+ 0098           ;       bTaskFlag |= BIT_1SEC_TASK;
+ 0098 80913000          lds R24,_bTaskFlag
+ 009C 8260              ori R24,2
+ 009E 80933000          sts _bTaskFlag,R24
+ 00A2                   .dbline 178
+ 00A2           ;  }
+ 00A2           L15:
+ 00A2                   .dbline 180
+ 00A2           ;  
+ 00A2           ;    timerInterrupt();
+ 00A2 91D1              rcall _timerInterrupt
+ 00A4                   .dbline -2
+ 00A4           L12:
+ 00A4 00D0              rcall pop_lset
+ 00A6                   .dbline 0 ; func end
+ 00A6 1895              reti
+ 00A8                   .dbend
+ 00A8                   .dbfunc e uart0_init _uart0_init fV
+                        .even
+ 00A8           _uart0_init::
+ 00A8                   .dbline -1
+ 00A8                   .dbline 193
+ 00A8           ;  
+ 00A8           ;  
+ 00A8           ; }
+ 00A8           ; 
+ 00A8           ; #if 1
+ 00A8           ; //--------------------------
+ 00A8           ; // uart0_init
+ 00A8           ; //--------------------------
+ 00A8           ; //UART0 initialize
+ 00A8           ; // desired baud rate: 9600
+ 00A8           ; // actual: baud rate:9600 (0.0%)
+ 00A8           ; void uart0_init(void)
+ 00A8           ; {
+ 00A8                   .dbline 194
+ 00A8           ;  UCSRB = 0x00; //disable while setting baud rate
+ 00A8 2224              clr R2
+ 00AA 2AB8              out 0xa,R2
+ 00AC                   .dbline 195
+ 00AC           ;  UCSRA = 0x00;
+ 00AC 2BB8              out 0xb,R2
+ 00AE                   .dbline 196
+ 00AE           ;  UCSRC = BIT(URSEL) | 0x06;
+ 00AE 86E8              ldi R24,134
+ 00B0 80BD              out 0x20,R24
+ 00B2                   .dbline 197
+ 00B2           ;  UBRRL = 0x47; //set baud rate lo
+ 00B2 87E4              ldi R24,71
+ 00B4 89B9              out 0x9,R24
+ 00B6                   .dbline 198
+ 00B6           ;  UBRRH = 0x00; //set baud rate hi
+ 00B6 20BC              out 0x20,R2
+ 00B8                   .dbline 199
+ 00B8           ;  UCSRB = 0x98;
+ 00B8 88E9              ldi R24,152
+ 00BA 8AB9              out 0xa,R24
+ 00BC                   .dbline -2
+ 00BC           L16:
+ 00BC                   .dbline 0 ; func end
+ 00BC 0895              ret
+ 00BE                   .dbend
+                        .area vector(rom, abs)
+                        .org 22
+ 0016 5FC0              rjmp _uart0_rx_isr
+                        .area text(rom, con, rel)
+ 00BE                   .dbfile C:\DOCUME~1\www\桌面\电热水控制板\固件\v001\m8.c
+ 00BE                   .dbfunc e uart0_rx_isr _uart0_rx_isr fV
+ 00BE           ;              c -> R20
+                        .even
+ 00BE           _uart0_rx_isr::
+ 00BE 00D0              rcall push_lset
+ 00C0 00D0              rcall push_gset1
+ 00C2                   .dbline -1
+ 00C2                   .dbline 231
+ 00C2           ;  
+ 00C2           ;  
+ 00C2           ;  
+ 00C2           ; }
+ 00C2           ; 
+ 00C2           ; #endif
+ 00C2           ; 
+ 00C2           ; 
+ 00C2           ; #if 0
+ 00C2           ; //UART0 initialize
+ 00C2           ; // desired baud rate: 57600
+ 00C2           ; // actual: baud rate:57599 (0.0%)
+ 00C2           ; void uart0_init(void)
+ 00C2           ; {
+ 00C2           ;  UCSRB = 0x00; //disable while setting baud rate
+ 00C2           ;  UCSRA = 0x00;
+ 00C2           ;  UCSRC = BIT(URSEL) | 0x06;
+ 00C2           ;  UBRRL = 0x0B; //set baud rate lo
+ 00C2           ;  UBRRH = 0x00; //set baud rate hi
+ 00C2           ;  UCSRB = 0x98;
+ 00C2           ; }
+ 00C2           ; #endif
+ 00C2           ; 
+ 00C2           ; 
+ 00C2           ; 
+ 00C2           ; 
+ 00C2           ; //--------------------------
+ 00C2           ; // uart0_rx_isr
+ 00C2           ; //--------------------------
+ 00C2           ; #pragma interrupt_handler uart0_rx_isr:12
+ 00C2           ; void uart0_rx_isr(void)
+ 00C2           ; {
+ 00C2                   .dbline 234
+ 00C2           ;  //uart has received a character in UDR
+ 00C2           ;  byte c;
+ 00C2           ;  FLASH_LED;
+ 00C2 8FE0              ldi R24,15
+ 00C4 8CB9              out 0xc,R24
+ 00C6                   .dbline 236
+ 00C6           ;  
+ 00C6           ;  c = UDR;
+ 00C6 4CB1              in R20,0xc
+ 00C8                   .dbline 237
+ 00C8           ;  InputFromHostStateMachine(c);
+ 00C8 042F              mov R16,R20
+ 00CA 0ED0              rcall _InputFromHostStateMachine
+ 00CC                   .dbline -2
+ 00CC           L17:
+ 00CC 00D0              rcall pop_gset1
+ 00CE 00D0              rcall pop_lset
+ 00D0                   .dbline 0 ; func end
+ 00D0 1895              reti
+ 00D2                   .dbsym r c 20 c
+ 00D2                   .dbend
+ 00D2                   .dbfunc e init_devices _init_devices fV
+                        .even
+ 00D2           _init_devices::
+ 00D2                   .dbline -1
+ 00D2                   .dbline 247
+ 00D2           ; 
+ 00D2           ; }
+ 00D2           ; 
+ 00D2           ; 
+ 00D2           ; //--------------------------
+ 00D2           ; // init_devices
+ 00D2           ; //--------------------------
+ 00D2           ; //call this routine to initialize all peripherals
+ 00D2           ; void init_devices(void)
+ 00D2           ; {
+ 00D2                   .dbline 249
+ 00D2           ;  //stop errant interrupts until set up
+ 00D2           ;  CLI(); //disable all interrupts
+ 00D2 F894              cli
+ 00D4                   .dbline 250
+ 00D4           ;  port_init();
+ 00D4 BDDF              rcall _port_init
+ 00D6                   .dbline 252
+ 00D6           ;  //watchdog_init();
+ 00D6           ;  timer0_init();
+ 00D6 CBDF              rcall _timer0_init
+ 00D8                   .dbline 253
+ 00D8           ;  uart0_init();
+ 00D8 E7DF              rcall _uart0_init
+ 00DA                   .dbline 255
+ 00DA           ; 
+ 00DA           ;  MCUCR = 0x00;
+ 00DA 2224              clr R2
+ 00DC 25BE              out 0x35,R2
+ 00DE                   .dbline 256
+ 00DE           ;  GICR  = 0x00;
+ 00DE 2BBE              out 0x3b,R2
+ 00E0                   .dbline 257
+ 00E0           ;  TIMSK = 0x01; //timer interrupt sources
+ 00E0 81E0              ldi R24,1
+ 00E2 89BF              out 0x39,R24
+ 00E4                   .dbline 258
+ 00E4           ;  SEI(); //re-enable interrupts
+ 00E4 7894              sei
+ 00E6                   .dbline -2
+ 00E6           L18:
+ 00E6                   .dbline 0 ; func end
+ 00E6 0895              ret
+ 00E8                   .dbend
+ 00E8                   .dbfunc e InputFromHostStateMachine _InputFromHostStateMachine fV
+                        .area func_lit(rom, con, rel)
+ 0000           L46:
+ 0000 9100              .word `L23
+ 0002 9A00              .word `L26
+ 0004 9A00              .word `L26
+ 0006 9A00              .word `L26
+ 0008 9A00              .word `L26
+ 000A 9A00              .word `L26
+ 000C 9A00              .word `L26
+ 000E 9A00              .word `L26
+ 0010 9A00              .word `L26
+ 0012 9A00              .word `L26
+ 0014 9A00              .word `L26
+ 0016 9A00              .word `L26
+ 0018 9A00              .word `L26
+ 001A 9A00              .word `L26
+ 001C 9A00              .word `L26
+ 001E 9A00              .word `L26
+ 0020 9A00              .word `L26
+ 0022 9A00              .word `L26
+ 0024 9A00              .word `L26
+ 0026 9A00              .word `L26
+ 0028 9A00              .word `L26
+ 002A 9A00              .word `L26
+ 002C 9A00              .word `L26
+ 002E 9A00              .word `L26
+ 0030 9A00              .word `L26
+ 0032 9A00              .word `L26
+ 0034 9A00              .word `L26
+ 0036 9A00              .word `L26
+ 0038 9A00              .word `L26
+ 003A 9A00              .word `L26
+ 003C 9A00              .word `L26
+ 003E 9A00              .word `L26
+ 0040 9A00              .word `L26
+ 0042 D800              .word `L38
+                        .area text(rom, con, rel)
+ 00E8                   .dbfile C:\DOCUME~1\www\桌面\电热水控制板\固件\v001\m8.c
+ 00E8           ;              i -> R20
+ 00E8           ;              c -> R20
+                        .even
+ 00E8           _InputFromHostStateMachine::
+ 00E8 00D0              rcall push_gset2
+ 00EA 402F              mov R20,R16
+ 00EC                   .dbline -1
+ 00EC                   .dbline 363
+ 00EC           ;  //all peripherals are now initialized
+ 00EC           ; }
+ 00EC           ; 
+ 00EC           ; 
+ 00EC           ; 
+ 00EC           ; #if 0
+ 00EC           ; 
+ 00EC           ; //--------------------------
+ 00EC           ; // InputFromHostStateMachine
+ 00EC           ; //--------------------------
+ 00EC           ; void
+ 00EC           ; InputFromHostStateMachine(unsigned char c){
+ 00EC           ; 
+ 00EC           ;       byte i;
+ 00EC           ; 
+ 00EC           ;       switch (bInputFromHostState){
+ 00EC           ;       case    0:
+ 00EC           ;                       if ( c == '[' )
+ 00EC           ;                               bInputFromHostState = 1;
+ 00EC           ;                       break;
+ 00EC           ; 
+ 00EC           ;       case    1:
+ 00EC           ;       case    2:
+ 00EC           ;       case    3:
+ 00EC           ;       case    4:
+ 00EC           ;       case    5:
+ 00EC           ;       case    6:
+ 00EC           ;       case    7:
+ 00EC           ;       case    8:
+ 00EC           ;       case    9:
+ 00EC           ;       case    10:
+ 00EC           ;       case    11:
+ 00EC           ;       case    12:
+ 00EC           ;       case    13:
+ 00EC           ;       case    14:
+ 00EC           ;       case    15:
+ 00EC           ;       case    16:
+ 00EC           ;       case    17:
+ 00EC           ;       case    18:
+ 00EC           ;       case    19:
+ 00EC           ;       case    20:
+ 00EC           ;       case    21:
+ 00EC           ;       case    22:
+ 00EC           ;       case    23:
+ 00EC           ;       case    24:
+ 00EC           ;       case    25:
+ 00EC           ;       case    26:
+ 00EC           ;       case    27:
+ 00EC           ;       case    28:
+ 00EC           ;       case    29:
+ 00EC           ;       case    30:
+ 00EC           ;       case    31:
+ 00EC           ;       case    32:     
+ 00EC           ; 
+ 00EC           ;       if ( c == '[' )
+ 00EC           ;                       {
+ 00EC           ;                               bInputFromHostState = 1;
+ 00EC           ;                               break;
+ 00EC           ;                       }
+ 00EC           ;                       if ( c == ']' )
+ 00EC           ;                       {
+ 00EC           ;                               bInputFromHostState = 0;
+ 00EC           ;                               break;
+ 00EC           ;                       }
+ 00EC           ;                       else
+ 00EC           ;                       //if ( ((c <= '9') && (c >='0')) || ((c <= 'F') && (c >='A')) )
+ 00EC           ;                       //{
+ 00EC           ;                               in_buffer[bInputFromHostState-1] =  c;  
+ 00EC           ;                               bInputFromHostState++;
+ 00EC           ;                       //}
+ 00EC           ;             //
+ 00EC           ;                       //else
+ 00EC           ;                       //      bInputFromHostState = 0;
+ 00EC           ;                       break;
+ 00EC           ; 
+ 00EC           ;       case    33:
+ 00EC           ;                       if ( c == ']' )
+ 00EC           ;                       {
+ 00EC           ;                       
+ 00EC           ;                       for(i=0; i<16; i++)
+ 00EC           ;                       {
+ 00EC           ;                               lcd_line1[i] = in_buffer[i];    
+ 00EC           ;                               lcd_line2[i] = in_buffer[i+16];         
+ 00EC           ;                       }
+ 00EC           ;                       
+ 00EC           ;                       bTaskFlag |= BIT_UPDATE_LCD;
+ 00EC           ; 
+ 00EC           ; 
+ 00EC           ;                       }
+ 00EC           ;                       break;
+ 00EC           ;                       
+ 00EC           ;       default:
+ 00EC           ;                               bInputFromHostState = 0;
+ 00EC           ; 
+ 00EC           ;       }
+ 00EC           ; 
+ 00EC           ; }
+ 00EC           ; 
+ 00EC           ; #endif
+ 00EC           ; 
+ 00EC           ; //--------------------------
+ 00EC           ; // InputFromHostStateMachine
+ 00EC           ; //--------------------------
+ 00EC           ; void
+ 00EC           ; InputFromHostStateMachine(unsigned char c){
+ 00EC                   .dbline 367
+ 00EC 60910000          lds R22,_bInputFromHostState
+ 00F0 7727              clr R23
+ 00F2 6030              cpi R22,0
+ 00F4 E0E0              ldi R30,0
+ 00F6 7E07              cpc R23,R30
+ 00F8 0CF4              brge X2
+ 00FA 83C0              rjmp L20
+ 00FC           X2:
+ 00FC 81E2              ldi R24,33
+ 00FE 90E0              ldi R25,0
+ 0100 8617              cp R24,R22
+ 0102 9707              cpc R25,R23
+ 0104 0CF4              brge X3
+ 0106 7DC0              rjmp L20
+ 0108           X3:
+ 0108 02E0              ldi R16,2
+ 010A 10E0              ldi R17,0
+ 010C 9B01              movw R18,R22
+ 010E 00D0              rcall empy16s
+ 0110 F801              movw R30,R16
+ 0112 80E0              ldi R24,<L46
+ 0114 90E0              ldi R25,>L46
+ 0116 E80F              add R30,R24
+ 0118 F91F              adc R31,R25
+ 011A 0590              lpm R0,Z+
+ 011C 1490              lpm R1,Z
+ 011E F001              movw R30,R0
+ 0120 0994              ijmp
+ 0122           X1:
+ 0122                   .dbline 367
+ 0122           ; 
+ 0122           ;       byte i;
+ 0122           ; 
+ 0122           ;       switch (bInputFromHostState){
+ 0122           L23:
+ 0122                   .dbline 369
+ 0122           ;       case    0:
+ 0122           ;                       if ( c == '[' )
+ 0122 4B35              cpi R20,91
+ 0124 09F0              breq X4
+ 0126 70C0              rjmp L21
+ 0128           X4:
+ 0128                   .dbline 370
+ 0128           ;                       {
+ 0128                   .dbline 371
+ 0128           ;                               bInputFromHostState = 1;
+ 0128 81E0              ldi R24,1
+ 012A 80930000          sts _bInputFromHostState,R24
+ 012E                   .dbline 372
+ 012E           ;                               bitIsHighHalfByte = 1;
+ 012E 80930F00          sts _bitIsHighHalfByte,R24
+ 0132                   .dbline 373
+ 0132           ;                       }
+ 0132                   .dbline 375
+ 0132           ; 
+ 0132           ;                       break;
+ 0132 6AC0              rjmp L21
+ 0134           L26:
+ 0134                   .dbline 410
+ 0134           ; 
+ 0134           ;       case    1:
+ 0134           ;       case    2:
+ 0134           ;       case    3:
+ 0134           ;       case    4:
+ 0134           ;       case    5:
+ 0134           ;       case    6:
+ 0134           ;       case    7:
+ 0134           ;       case    8:
+ 0134           ;       case    9:
+ 0134           ;       case    10:
+ 0134           ;       case    11:
+ 0134           ;       case    12:
+ 0134           ;       case    13:
+ 0134           ;       case    14:
+ 0134           ;       case    15:
+ 0134           ;       case    16:
+ 0134           ;       case    17:
+ 0134           ;       case    18:
+ 0134           ;       case    19:
+ 0134           ;       case    20:
+ 0134           ;       case    21:
+ 0134           ;       case    22:
+ 0134           ;       case    23:
+ 0134           ;       case    24:
+ 0134           ;       case    25:
+ 0134           ;       case    26:
+ 0134           ;       case    27:
+ 0134           ;       case    28:
+ 0134           ;       case    29:
+ 0134           ;       case    30:
+ 0134           ;       case    31:
+ 0134           ;       case    32:     
+ 0134           ; 
+ 0134           ;                       if ( c == '[' )
+ 0134 4B35              cpi R20,91
+ 0136 21F4              brne L27
+ 0138                   .dbline 411
+ 0138           ;                       {
+ 0138                   .dbline 412
+ 0138           ;                               bInputFromHostState = 1;
+ 0138 81E0              ldi R24,1
+ 013A 80930000          sts _bInputFromHostState,R24
+ 013E                   .dbline 413
+ 013E           ;                               break;
+ 013E 64C0              rjmp L21
+ 0140           L27:
+ 0140                   .dbline 416
+ 0140           ;                       }
+ 0140           ; 
+ 0140           ;                       if ( c == ']' )
+ 0140 4D35              cpi R20,93
+ 0142 21F4              brne L29
+ 0144                   .dbline 417
+ 0144           ;                       {
+ 0144                   .dbline 418
+ 0144           ;                               bInputFromHostState = 0;
+ 0144 2224              clr R2
+ 0146 20920000          sts _bInputFromHostState,R2
+ 014A                   .dbline 419
+ 014A           ;                               break;
+ 014A 5EC0              rjmp L21
+ 014C           L29:
+ 014C                   .dbline 423
+ 014C           ;                       }
+ 014C           ; 
+ 014C           ; 
+ 014C           ;                       if ( ((c <= '9') && (c >='0')) || ((c <= 'F') && (c >='A')) )
+ 014C 89E3              ldi R24,57
+ 014E 8417              cp R24,R20
+ 0150 10F0              brlo L34
+ 0152 4033              cpi R20,48
+ 0154 28F4              brsh L33
+ 0156           L34:
+ 0156 86E4              ldi R24,70
+ 0158 8417              cp R24,R20
+ 015A 30F1              brlo L31
+ 015C 4134              cpi R20,65
+ 015E 20F1              brlo L31
+ 0160           L33:
+ 0160                   .dbline 424
+ 0160           ;                       {
+ 0160                   .dbline 425
+ 0160           ;                               if (bitIsHighHalfByte)
+ 0160 20900F00          lds R2,_bitIsHighHalfByte
+ 0164 2220              tst R2
+ 0166 51F0              breq L35
+ 0168                   .dbline 426
+ 0168           ;                               {       
+ 0168                   .dbline 427
+ 0168           ;                                       bitIsHighHalfByte = 0;
+ 0168 2224              clr R2
+ 016A 20920F00          sts _bitIsHighHalfByte,R2
+ 016E                   .dbline 428
+ 016E           ;                                       bHighHalfByte = hex_to_bin(c) * 16;
+ 016E 042F              mov R16,R20
+ 0170 00D0              rcall _hex_to_bin
+ 0172 80E1              ldi R24,16
+ 0174 809F              mul R24,R16
+ 0176 00920E00          sts _bHighHalfByte,R0
+ 017A                   .dbline 429
+ 017A           ;                               }
+ 017A 46C0              rjmp L21
+ 017C           L35:
+ 017C                   .dbline 431
+ 017C           ;                               else
+ 017C           ;                               {
+ 017C                   .dbline 432
+ 017C           ;                                       in_buffer[bInputFromHostState-1] =  bHighHalfByte  + hex_to_bin(c);                                     
+ 017C 042F              mov R16,R20
+ 017E 00D0              rcall _hex_to_bin
+ 0180 20900E00          lds R2,_bHighHalfByte
+ 0184 200E              add R2,R16
+ 0186 80E0              ldi R24,<_in_buffer-1
+ 0188 90E0              ldi R25,>_in_buffer-1
+ 018A E0910000          lds R30,_bInputFromHostState
+ 018E FF27              clr R31
+ 0190 E80F              add R30,R24
+ 0192 F91F              adc R31,R25
+ 0194 2082              std z+0,R2
+ 0196                   .dbline 433
+ 0196           ;                                       bInputFromHostState++;
+ 0196 80910000          lds R24,_bInputFromHostState
+ 019A 8F5F              subi R24,255    ; addi 1
+ 019C 80930000          sts _bInputFromHostState,R24
+ 01A0                   .dbline 434
+ 01A0           ;                                       bitIsHighHalfByte = 1;
+ 01A0 81E0              ldi R24,1
+ 01A2 80930F00          sts _bitIsHighHalfByte,R24
+ 01A6                   .dbline 436
+ 01A6           ; 
+ 01A6           ;                               }
+ 01A6                   .dbline 437
+ 01A6           ;                       }
+ 01A6 30C0              rjmp L21
+ 01A8           L31:
+ 01A8                   .dbline 440
+ 01A8           ;             
+ 01A8           ;                       else
+ 01A8           ;                               bInputFromHostState = 0;
+ 01A8 2224              clr R2
+ 01AA 20920000          sts _bInputFromHostState,R2
+ 01AE                   .dbline 444
+ 01AE           ; 
+ 01AE           ; 
+ 01AE           ; 
+ 01AE           ;                       break;
+ 01AE 2CC0              rjmp L21
+ 01B0           L38:
+ 01B0                   .dbline 447
+ 01B0           ; 
+ 01B0           ;       case    33:
+ 01B0           ;                       if ( c == ']' )
+ 01B0 4D35              cpi R20,93
+ 01B2 51F5              brne L21
+ 01B4                   .dbline 448
+ 01B4           ;                       {
+ 01B4                   .dbline 450
+ 01B4           ;                       
+ 01B4           ;                       for(i=0; i<16; i++)
+ 01B4 4427              clr R20
+ 01B6 1DC0              rjmp L44
+ 01B8           L41:
+ 01B8                   .dbline 451
+ 01B8                   .dbline 452
+ 01B8 80E0              ldi R24,<_in_buffer
+ 01BA 90E0              ldi R25,>_in_buffer
+ 01BC E42F              mov R30,R20
+ 01BE FF27              clr R31
+ 01C0 E80F              add R30,R24
+ 01C2 F91F              adc R31,R25
+ 01C4 2080              ldd R2,z+0
+ 01C6 80E0              ldi R24,<_lcd_line1
+ 01C8 90E0              ldi R25,>_lcd_line1
+ 01CA E42F              mov R30,R20
+ 01CC FF27              clr R31
+ 01CE E80F              add R30,R24
+ 01D0 F91F              adc R31,R25
+ 01D2 2082              std z+0,R2
+ 01D4                   .dbline 453
+ 01D4 80E0              ldi R24,<_in_buffer+16
+ 01D6 90E0              ldi R25,>_in_buffer+16
+ 01D8 E42F              mov R30,R20
+ 01DA FF27              clr R31
+ 01DC E80F              add R30,R24
+ 01DE F91F              adc R31,R25
+ 01E0 2080              ldd R2,z+0
+ 01E2 80E0              ldi R24,<_lcd_line2
+ 01E4 90E0              ldi R25,>_lcd_line2
+ 01E6 E42F              mov R30,R20
+ 01E8 FF27              clr R31
+ 01EA E80F              add R30,R24
+ 01EC F91F              adc R31,R25
+ 01EE 2082              std z+0,R2
+ 01F0                   .dbline 454
+ 01F0           L42:
+ 01F0                   .dbline 450
+ 01F0 4395              inc R20
+ 01F2           L44:
+ 01F2                   .dbline 450
+ 01F2 4031              cpi R20,16
+ 01F4 08F3              brlo L41
+ 01F6                   .dbline 461
+ 01F6           ;                       {
+ 01F6           ;                               lcd_line1[i] = in_buffer[i];    
+ 01F6           ;                               lcd_line2[i] = in_buffer[i+16];         
+ 01F6           ;                       }
+ 01F6           ;       
+ 01F6           ;                       //for(i=0; i<32; i++)
+ 01F6           ;                       //{
+ 01F6           ;                       //      uart_tx(in_buffer[i]);  
+ 01F6           ;                       //}             
+ 01F6           ; 
+ 01F6           ;                       bTaskFlag |= BIT_UPDATE_LCD;
+ 01F6 80913000          lds R24,_bTaskFlag
+ 01FA 8460              ori R24,4
+ 01FC 80933000          sts _bTaskFlag,R24
+ 0200                   .dbline 464
+ 0200           ; 
+ 0200           ; 
+ 0200           ;                       }
+ 0200                   .dbline 465
+ 0200           ;                       break;
+ 0200 03C0              rjmp L21
+ 0202           L20:
+ 0202                   .dbline 470
+ 0202 2224              clr R2
+ 0204 20920000          sts _bInputFromHostState,R2
+ 0208                   .dbline 472
+ 0208           L21:
+ 0208                   .dbline -2
+ 0208           L19:
+ 0208 00D0              rcall pop_gset2
+ 020A                   .dbline 0 ; func end
+ 020A 0895              ret
+ 020C                   .dbsym r i 20 c
+ 020C                   .dbsym r c 20 c
+ 020C                   .dbend
+ 020C                   .dbfunc e show_new_version _show_new_version fV
+                        .even
+ 020C           _show_new_version::
+ 020C                   .dbline -1
+ 020C                   .dbline 482
+ 020C           ;                       
+ 020C           ; 
+ 020C           ;               
+ 020C           ;       default:
+ 020C           ;                               bInputFromHostState = 0;
+ 020C           ; 
+ 020C           ;       }
+ 020C           ; 
+ 020C           ; }
+ 020C           ; 
+ 020C           ; //---------------------
+ 020C           ; // show_new_version
+ 020C           ; //---------------------
+ 020C           ; 
+ 020C           ; void  
+ 020C           ; show_new_version(void)
+ 020C           ; {
+ 020C                   .dbline 485
+ 020C           ; 
+ 020C           ;       
+ 020C           ;       uart_tx('[');
+ 020C 0BE5              ldi R16,91
+ 020E 00D0              rcall _uart_tx
+ 0210                   .dbline 486
+ 0210           ;       uart_tx('W');
+ 0210 07E5              ldi R16,87
+ 0212 00D0              rcall _uart_tx
+ 0214                   .dbline 487
+ 0214           ;       uart_tx('A');
+ 0214 01E4              ldi R16,65
+ 0216 00D0              rcall _uart_tx
+ 0218                   .dbline 488
+ 0218           ;       uart_tx('X');
+ 0218 08E5              ldi R16,88
+ 021A 00D0              rcall _uart_tx
+ 021C                   .dbline 489
+ 021C           ;       uart_tx('-');
+ 021C 0DE2              ldi R16,45
+ 021E 00D0              rcall _uart_tx
+ 0220                   .dbline 490
+ 0220           ;       uart_tx('M');
+ 0220 0DE4              ldi R16,77
+ 0222 00D0              rcall _uart_tx
+ 0224                   .dbline 491
+ 0224           ;       uart_tx('8');
+ 0224 08E3              ldi R16,56
+ 0226 00D0              rcall _uart_tx
+ 0228                   .dbline 492
+ 0228           ;       uart_tx('-');
+ 0228 0DE2              ldi R16,45
+ 022A 00D0              rcall _uart_tx
+ 022C                   .dbline 493
+ 022C           ;       uart_tx('U');
+ 022C 05E5              ldi R16,85
+ 022E 00D0              rcall _uart_tx
+ 0230                   .dbline 494
+ 0230           ;       uart_tx('A');
+ 0230 01E4              ldi R16,65
+ 0232 00D0              rcall _uart_tx
+ 0234                   .dbline 495
+ 0234           ;       uart_tx('R');
+ 0234 02E5              ldi R16,82
+ 0236 00D0              rcall _uart_tx
+ 0238                   .dbline 496
+ 0238           ;       uart_tx('2');
+ 0238 02E3              ldi R16,50
+ 023A 00D0              rcall _uart_tx
+ 023C                   .dbline 497
+ 023C           ;       uart_tx('L');
+ 023C 0CE4              ldi R16,76
+ 023E 00D0              rcall _uart_tx
+ 0240                   .dbline 498
+ 0240           ;       uart_tx('C');
+ 0240 03E4              ldi R16,67
+ 0242 00D0              rcall _uart_tx
+ 0244                   .dbline 499
+ 0244           ;       uart_tx('D');   
+ 0244 04E4              ldi R16,68
+ 0246 00D0              rcall _uart_tx
+ 0248                   .dbline 500
+ 0248           ;       uart_tx('-');
+ 0248 0DE2              ldi R16,45
+ 024A 00D0              rcall _uart_tx
+ 024C                   .dbline 501
+ 024C           ;       uart_tx('V');
+ 024C 06E5              ldi R16,86
+ 024E 00D0              rcall _uart_tx
+ 0250                   .dbline 502
+ 0250           ;       uart_tx('1');
+ 0250 01E3              ldi R16,49
+ 0252 00D0              rcall _uart_tx
+ 0254                   .dbline 503
+ 0254           ;       uart_tx('0');
+ 0254 00E3              ldi R16,48
+ 0256 00D0              rcall _uart_tx
+ 0258                   .dbline 504
+ 0258           ;       uart_tx('1');
+ 0258 01E3              ldi R16,49
+ 025A 00D0              rcall _uart_tx
+ 025C                   .dbline 505
+ 025C           ;       uart_tx(']'); 
+ 025C 0DE5              ldi R16,93
+ 025E 00D0              rcall _uart_tx
+ 0260                   .dbline -2
+ 0260           L47:
+ 0260                   .dbline 0 ; func end
+ 0260 0895              ret
+ 0262                   .dbend
+ 0262                   .dbfunc e InitWritingDetection _InitWritingDetection fV
+                        .even
+ 0262           _InitWritingDetection::
+ 0262                   .dbline -1
+ 0262                   .dbline 519
+ 0262           ;       
+ 0262           ;       
+ 0262           ; }
+ 0262           ; 
+ 0262           ; //////////////////////////////////////////////////////////////////////////////
+ 0262           ; //
+ 0262           ; //                           Touchpen  Routines
+ 0262           ; //////////////////////////////////////////////////////////////////////////////
+ 0262           ; 
+ 0262           ; //--------------------------
+ 0262           ; // InitWritingDetection
+ 0262           ; //--------------------------
+ 0262           ; 
+ 0262           ; void InitWritingDetection(void){
+ 0262                   .dbline 530
+ 0262           ; //
+ 0262           ; //PC0/ADC0  -   X+
+ 0262           ; //PC1/ADC0  -   Y+
+ 0262           ; //PC2/ADC0  -   X-
+ 0262           ; //PC3/ADC0  -   Y-
+ 0262           ; //x+  : 输出，低电平。
+ 0262           ; //Y+ : 输入加上拉。
+ 0262           ; //x-  : 输出，低电平。2了
+ 0262           ; //Y- : 输入无上拉。
+ 0262           ; 
+ 0262           ;       PORTC = 0x02;
+ 0262 82E0              ldi R24,2
+ 0264 85BB              out 0x15,R24
+ 0266                   .dbline 531
+ 0266           ;       DDRC  = 0x05;
+ 0266 85E0              ldi R24,5
+ 0268 84BB              out 0x14,R24
+ 026A                   .dbline 533
+ 026A           ; 
+ 026A           ;       ADCSRA  = 0x00; //禁止AD转换
+ 026A 2224              clr R2
+ 026C 26B8              out 0x6,R2
+ 026E                   .dbline 534
+ 026E           ;       ADMUX   = 0x00;
+ 026E 27B8              out 0x7,R2
+ 0270                   .dbline 535
+ 0270           ;       SFIOR |= 0x00;
+ 0270 20B6              in R2,0x30
+ 0272 20BE              out 0x30,R2
+ 0274                   .dbline 536
+ 0274           ;       ACSR    = 0x80; //禁止模拟比较器
+ 0274 80E8              ldi R24,128
+ 0276 88B9              out 0x8,R24
+ 0278                   .dbline 537
+ 0278           ;       ADCSRA  = 0x00;
+ 0278 2224              clr R2
+ 027A 26B8              out 0x6,R2
+ 027C                   .dbline -2
+ 027C           L48:
+ 027C                   .dbline 0 ; func end
+ 027C 0895              ret
+ 027E                   .dbend
+ 027E                   .dbfunc e IsPenWritting _IsPenWritting fc
+                        .even
+ 027E           _IsPenWritting::
+ 027E                   .dbline -1
+ 027E                   .dbline 545
+ 027E           ; 
+ 027E           ; }
+ 027E           ; 
+ 027E           ; //---------------------------------
+ 027E           ; // IsPenWritting
+ 027E           ; //---------------------------------
+ 027E           ; 
+ 027E           ; unsigned char IsPenWritting(void){
+ 027E                   .dbline 555
+ 027E           ; //
+ 027E           ; //PC0/ADC0  -   X+
+ 027E           ; //PC1/ADC0  -   Y+
+ 027E           ; //PC2/ADC0  -   X-
+ 027E           ; //PC3/ADC0  -   Y-
+ 027E           ; //x+  : 输出，低电平。
+ 027E           ; //x-  : 输出，低电平。
+ 027E           ; //Y+ : 输入加上拉。
+ 027E           ; //Y- : 输入无上拉。
+ 027E           ;       if ((PINC & BIT1) )
+ 027E 999B              sbis 0x13,1
+ 0280 02C0              rjmp L50
+ 0282                   .dbline 556
+ 0282           ;               return 0;
+ 0282 0027              clr R16
+ 0284 01C0              rjmp L49
+ 0286           L50:
+ 0286                   .dbline 558
+ 0286           ;       else
+ 0286           ;               return 1;
+ 0286 01E0              ldi R16,1
+ 0288                   .dbline -2
+ 0288           L49:
+ 0288                   .dbline 0 ; func end
+ 0288 0895              ret
+ 028A                   .dbend
+                        .area data(ram, con, rel)
+ 0002                   .dbfile C:\DOCUME~1\www\桌面\电热水控制板\固件\v001\m8.c
+ 0002           L53:
+ 0002                   .blkb 2
+                        .area idata
+ 0002 0000              .word 0
+                        .area data(ram, con, rel)
+ 0004                   .dbfile C:\DOCUME~1\www\桌面\电热水控制板\固件\v001\m8.c
+                        .area text(rom, con, rel)
+ 028A                   .dbfile C:\DOCUME~1\www\桌面\电热水控制板\固件\v001\m8.c
+ 028A                   .dbfunc e GetTouchpenY _GetTouchpenY fs
+ 028A                   .dbsym s value_1 L53 s
+ 028A           ;         wTmout -> R20,R21
+                        .even
+ 028A           _GetTouchpenY::
+ 028A 00D0              rcall push_gset1
+ 028C                   .dbline -1
+ 028C                   .dbline 566
+ 028C           ; 
+ 028C           ; }
+ 028C           ; 
+ 028C           ; //---------------------------------
+ 028C           ; // GetTouchpenY
+ 028C           ; //---------------------------------
+ 028C           ; 
+ 028C           ; unsigned short GetTouchpenY(void){
+ 028C                   .dbline 584
+ 028C           ; //
+ 028C           ; //PC0/ADC0  -   X+
+ 028C           ; //PC1/ADC0  -   Y+
+ 028C           ; //PC2/ADC0  -   X-
+ 028C           ; //PC3/ADC0  -   Y-
+ 028C           ; 
+ 028C           ; //x+  : 输入，ADC0
+ 028C           ; //Y+ :  输出，GPIO, 高电平。
+ 028C           ; //x-  : 输入, GPIO
+ 028C           ; //Y- :  输出，GPIO, 低电平。
+ 028C           ; 
+ 028C           ;       static unsigned short value_1=0;
+ 028C           ;       unsigned short wTmout;
+ 028C           ; 
+ 028C           ; 
+ 028C           ;       //return 0x0202;
+ 028C           ; 
+ 028C           ;       PORTC = 0x02;
+ 028C 82E0              ldi R24,2
+ 028E 85BB              out 0x15,R24
+ 0290                   .dbline 585
+ 0290           ;       DDRC  = 0x0A;
+ 0290 8AE0              ldi R24,10
+ 0292 84BB              out 0x14,R24
+ 0294                   .dbline 589
+ 0294           ; 
+ 0294           ; 
+ 0294           ;       //adc转换初始化
+ 0294           ;       ADCSRA  = 0x00; //禁止AD转换
+ 0294 2224              clr R2
+ 0296 26B8              out 0x6,R2
+ 0298                   .dbline 590
+ 0298           ;       ADMUX   = 0x40;
+ 0298 80E4              ldi R24,64
+ 029A 87B9              out 0x7,R24
+ 029C                   .dbline 591
+ 029C           ;       SFIOR |= 0x00;
+ 029C 20B6              in R2,0x30
+ 029E 20BE              out 0x30,R2
+ 02A0                   .dbline 592
+ 02A0           ;       ACSR    = 0x80; //禁止模拟比较器
+ 02A0 80E8              ldi R24,128
+ 02A2 88B9              out 0x8,R24
+ 02A4                   .dbline 593
+ 02A4           ;       ADCSRA  = 0xC7;
+ 02A4 87EC              ldi R24,199
+ 02A6 86B9              out 0x6,R24
+ 02A8                   .dbline 595
+ 02A8           ; 
+ 02A8           ;       wTmout = 0;
+ 02A8 4427              clr R20
+ 02AA 5527              clr R21
+ 02AC           L54:
+ 02AC                   .dbline 597
+ 02AC           L55:
+ 02AC                   .dbline 597
+ 02AC           ; 
+ 02AC           ;       while( ((ADCSRA & BIT4) == 0) && ((wTmout++) < 0x8000));        // bit4
+ 02AC 3499              sbic 0x6,4
+ 02AE 08C0              rjmp L57
+ 02B0 1A01              movw R2,R20
+ 02B2 4F5F              subi R20,255  ; offset = 1
+ 02B4 5F4F              sbci R21,255
+ 02B6 C101              movw R24,R2
+ 02B8 8030              cpi R24,0
+ 02BA E0E8              ldi R30,128
+ 02BC 9E07              cpc R25,R30
+ 02BE B0F3              brlo L54
+ 02C0           L57:
+ 02C0                   .dbline 599
+ 02C0           ; 
+ 02C0           ;       if (wTmout >= 0x2000)
+ 02C0 4030              cpi R20,0
+ 02C2 E0E2              ldi R30,32
+ 02C4 5E07              cpc R21,R30
+ 02C6 78F0              brlo L58
+ 02C8                   .dbline 600
+ 02C8           ;       {
+ 02C8                   .dbline 601
+ 02C8           ;                       ADCSRA|=0x00;
+ 02C8 26B0              in R2,0x6
+ 02CA 26B8              out 0x6,R2
+ 02CC                   .dbline 602
+ 02CC           ;                       return (0x800 - value_1*2);
+ 02CC 20910200          lds R18,L53
+ 02D0 30910300          lds R19,L53+1
+ 02D4 02E0              ldi R16,2
+ 02D6 10E0              ldi R17,0
+ 02D8 00D0              rcall empy16s
+ 02DA 1801              movw R2,R16
+ 02DC 00E0              ldi R16,2048
+ 02DE 18E0              ldi R17,8
+ 02E0 0219              sub R16,R2
+ 02E2 1309              sbc R17,R3
+ 02E4 1FC0              rjmp L52
+ 02E6           L58:
+ 02E6                   .dbline 605
+ 02E6           ;       }
+ 02E6           ; 
+ 02E6           ;       value_1=ADCL;            //首先读低位
+ 02E6 24B0              in R2,0x4
+ 02E8 3324              clr R3
+ 02EA 30920300          sts L53+1,R3
+ 02EE 20920200          sts L53,R2
+ 02F2                   .dbline 606
+ 02F2           ;       value_1|=(unsigned short)ADCH << 8; //然后读高位
+ 02F2 25B0              in R2,0x5
+ 02F4 3324              clr R3
+ 02F6 322C              mov R3,R2
+ 02F8 2224              clr R2
+ 02FA 40900200          lds R4,L53
+ 02FE 50900300          lds R5,L53+1
+ 0302 4228              or R4,R2
+ 0304 5328              or R5,R3
+ 0306 50920300          sts L53+1,R5
+ 030A 40920200          sts L53,R4
+ 030E                   .dbline 608
+ 030E           ; 
+ 030E           ;       ADCSRA|=0x00;
+ 030E 26B0              in R2,0x6
+ 0310 26B8              out 0x6,R2
+ 0312                   .dbline 610
+ 0312           ; 
+ 0312           ;       return (0x800 - value_1*2);
+ 0312 9201              movw R18,R4
+ 0314 02E0              ldi R16,2
+ 0316 10E0              ldi R17,0
+ 0318 00D0              rcall empy16s
+ 031A 1801              movw R2,R16
+ 031C 00E0              ldi R16,2048
+ 031E 18E0              ldi R17,8
+ 0320 0219              sub R16,R2
+ 0322 1309              sbc R17,R3
+ 0324                   .dbline -2
+ 0324           L52:
+ 0324 00D0              rcall pop_gset1
+ 0326                   .dbline 0 ; func end
+ 0326 0895              ret
+ 0328                   .dbsym r wTmout 20 s
+ 0328                   .dbend
+                        .area data(ram, con, rel)
+ 0004                   .dbfile C:\DOCUME~1\www\桌面\电热水控制板\固件\v001\m8.c
+ 0004           L61:
+ 0004                   .blkb 2
+                        .area idata
+ 0004 0000              .word 0
+                        .area data(ram, con, rel)
+ 0006                   .dbfile C:\DOCUME~1\www\桌面\电热水控制板\固件\v001\m8.c
+                        .area text(rom, con, rel)
+ 0328                   .dbfile C:\DOCUME~1\www\桌面\电热水控制板\固件\v001\m8.c
+ 0328                   .dbfunc e GetTouchpenX _GetTouchpenX fs
+ 0328                   .dbsym s value_2 L61 s
+ 0328           ;         wTmout -> R20,R21
+                        .even
+ 0328           _GetTouchpenX::
+ 0328 00D0              rcall push_gset1
+ 032A                   .dbline -1
+ 032A                   .dbline 620
+ 032A           ; 
+ 032A           ; 
+ 032A           ; }
+ 032A           ; 
+ 032A           ; 
+ 032A           ; //---------------------------------
+ 032A           ; // GetTouchpenX
+ 032A           ; //---------------------------------
+ 032A           ; 
+ 032A           ; unsigned short GetTouchpenX(void){
+ 032A                   .dbline 636
+ 032A           ; //
+ 032A           ; //PC0/ADC0  -   X+
+ 032A           ; //PC1/ADC0  -   Y+
+ 032A           ; //PC2/ADC0  -   X-
+ 032A           ; //PC3/ADC0  -   Y-
+ 032A           ; 
+ 032A           ; //x+  :  输出，GPIO, 高电平。
+ 032A           ; //Y+  :  输入，ADC1  ,            
+ 032A           ; //x-  :  输出，GPIO, 低电平。
+ 032A           ; //Y-  :  输入, GPIO 
+ 032A           ;       static unsigned short value_2=0;
+ 032A           ; 
+ 032A           ;       //return 0x0101;
+ 032A           ;       unsigned short wTmout;
+ 032A           ; 
+ 032A           ;       PORTC = 0x01;
+ 032A 81E0              ldi R24,1
+ 032C 85BB              out 0x15,R24
+ 032E                   .dbline 637
+ 032E           ;       DDRC  = 0x05;
+ 032E 85E0              ldi R24,5
+ 0330 84BB              out 0x14,R24
+ 0332                   .dbline 641
+ 0332           ; 
+ 0332           ; 
+ 0332           ;       //adc转换初始化
+ 0332           ;       ADCSRA  = 0x00; //禁止AD转换
+ 0332 2224              clr R2
+ 0334 26B8              out 0x6,R2
+ 0336                   .dbline 642
+ 0336           ;       ADMUX   = 0x41;
+ 0336 81E4              ldi R24,65
+ 0338 87B9              out 0x7,R24
+ 033A                   .dbline 643
+ 033A           ;       SFIOR |= 0x00;
+ 033A 20B6              in R2,0x30
+ 033C 20BE              out 0x30,R2
+ 033E                   .dbline 644
+ 033E           ;       ACSR    = 0x80; //禁止模拟比较器
+ 033E 80E8              ldi R24,128
+ 0340 88B9              out 0x8,R24
+ 0342                   .dbline 645
+ 0342           ;       ADCSRA  = 0xC7;
+ 0342 87EC              ldi R24,199
+ 0344 86B9              out 0x6,R24
+ 0346                   .dbline 647
+ 0346           ; 
+ 0346           ;       wTmout = 0;
+ 0346 4427              clr R20
+ 0348 5527              clr R21
+ 034A           L62:
+ 034A                   .dbline 649
+ 034A           L63:
+ 034A                   .dbline 649
+ 034A           ; 
+ 034A           ;       while( ((ADCSRA & BIT4) == 0) && ((wTmout++) < 0x8000));        // bit4
+ 034A 3499              sbic 0x6,4
+ 034C 08C0              rjmp L65
+ 034E 1A01              movw R2,R20
+ 0350 4F5F              subi R20,255  ; offset = 1
+ 0352 5F4F              sbci R21,255
+ 0354 C101              movw R24,R2
+ 0356 8030              cpi R24,0
+ 0358 E0E8              ldi R30,128
+ 035A 9E07              cpc R25,R30
+ 035C B0F3              brlo L62
+ 035E           L65:
+ 035E                   .dbline 651
+ 035E           ; 
+ 035E           ;       if (wTmout >= 0x2000)
+ 035E 4030              cpi R20,0
+ 0360 E0E2              ldi R30,32
+ 0362 5E07              cpc R21,R30
+ 0364 78F0              brlo L66
+ 0366                   .dbline 652
+ 0366           ;       {
+ 0366                   .dbline 653
+ 0366           ;                       ADCSRA|=0x00;
+ 0366 26B0              in R2,0x6
+ 0368 26B8              out 0x6,R2
+ 036A                   .dbline 654
+ 036A           ;                       return (0x800 - value_2*2);
+ 036A 20910400          lds R18,L61
+ 036E 30910500          lds R19,L61+1
+ 0372 02E0              ldi R16,2
+ 0374 10E0              ldi R17,0
+ 0376 00D0              rcall empy16s
+ 0378 1801              movw R2,R16
+ 037A 00E0              ldi R16,2048
+ 037C 18E0              ldi R17,8
+ 037E 0219              sub R16,R2
+ 0380 1309              sbc R17,R3
+ 0382 1FC0              rjmp L60
+ 0384           L66:
+ 0384                   .dbline 657
+ 0384           ;       }
+ 0384           ; 
+ 0384           ;       value_2 = ADCL;          //首先读低位
+ 0384 24B0              in R2,0x4
+ 0386 3324              clr R3
+ 0388 30920500          sts L61+1,R3
+ 038C 20920400          sts L61,R2
+ 0390                   .dbline 658
+ 0390           ;       value_2|= (unsigned short)ADCH << 8; //然后读高位
+ 0390 25B0              in R2,0x5
+ 0392 3324              clr R3
+ 0394 322C              mov R3,R2
+ 0396 2224              clr R2
+ 0398 40900400          lds R4,L61
+ 039C 50900500          lds R5,L61+1
+ 03A0 4228              or R4,R2
+ 03A2 5328              or R5,R3
+ 03A4 50920500          sts L61+1,R5
+ 03A8 40920400          sts L61,R4
+ 03AC                   .dbline 660
+ 03AC           ; 
+ 03AC           ;       ADCSRA|=0x00;
+ 03AC 26B0              in R2,0x6
+ 03AE 26B8              out 0x6,R2
+ 03B0                   .dbline 662
+ 03B0           ; 
+ 03B0           ;       return (0x800 - value_2 *2);
+ 03B0 9201              movw R18,R4
+ 03B2 02E0              ldi R16,2
+ 03B4 10E0              ldi R17,0
+ 03B6 00D0              rcall empy16s
+ 03B8 1801              movw R2,R16
+ 03BA 00E0              ldi R16,2048
+ 03BC 18E0              ldi R17,8
+ 03BE 0219              sub R16,R2
+ 03C0 1309              sbc R17,R3
+ 03C2                   .dbline -2
+ 03C2           L60:
+ 03C2 00D0              rcall pop_gset1
+ 03C4                   .dbline 0 ; func end
+ 03C4 0895              ret
+ 03C6                   .dbsym r wTmout 20 s
+ 03C6                   .dbend
+                        .area data(ram, con, rel)
+ 0006                   .dbfile C:\DOCUME~1\www\桌面\电热水控制板\固件\v001\m8.c
+ 0006           L69:
+ 0006                   .blkb 1
+                        .area idata
+ 0006 00                .byte 0
+                        .area data(ram, con, rel)
+ 0007                   .dbfile C:\DOCUME~1\www\桌面\电热水控制板\固件\v001\m8.c
+ 0007           L70:
+ 0007                   .blkb 1
+                        .area idata
+ 0007 00                .byte 0
+                        .area data(ram, con, rel)
+ 0008                   .dbfile C:\DOCUME~1\www\桌面\电热水控制板\固件\v001\m8.c
+                        .area text(rom, con, rel)
+ 03C6                   .dbfile C:\DOCUME~1\www\桌面\电热水控制板\固件\v001\m8.c
+ 03C6                   .dbfunc e timerInterrupt _timerInterrupt fV
+ 03C6                   .dbsym s b10cnt1 L70 c
+ 03C6                   .dbsym s b10cnt L69 c
+                        .even
+ 03C6           _timerInterrupt::
+ 03C6                   .dbline -1
+ 03C6                   .dbline 671
+ 03C6                   .dbline 682
+ 03C6 80910700          lds R24,L70
+ 03CA 8F5F              subi R24,255    ; addi 1
+ 03CC 80930700          sts L70,R24
+ 03D0                   .dbline 683
+ 03D0 81E0              ldi R24,1
+ 03D2 20900700          lds R2,L70
+ 03D6 8215              cp R24,R2
+ 03D8 20F4              brsh L71
+ 03DA                   .dbline 684
+ 03DA                   .dbline 685
+ 03DA 2224              clr R2
+ 03DC 20920700          sts L70,R2
+ 03E0                   .dbline 686
+ 03E0 01D0              rcall _tTouchPen
+ 03E2                   .dbline 687
+ 03E2           L71:
+ 03E2                   .dbline -2
+ 03E2           L68:
+ 03E2                   .dbline 0 ; func end
+ 03E2 0895              ret
+ 03E4                   .dbend
+                        .area data(ram, con, rel)
+ 0008                   .dbfile C:\DOCUME~1\www\桌面\电热水控制板\固件\v001\m8.c
+ 0008           L74:
+ 0008                   .blkb 1
+                        .area idata
+ 0008 00                .byte 0
+                        .area data(ram, con, rel)
+ 0009                   .dbfile C:\DOCUME~1\www\桌面\电热水控制板\固件\v001\m8.c
+                        .area text(rom, con, rel)
+ 03E4                   .dbfile C:\DOCUME~1\www\桌面\电热水控制板\固件\v001\m8.c
+ 03E4                   .dbfunc e tTouchPen _tTouchPen fV
+ 03E4                   .dbsym s bPenState L74 c
+ 03E4           ;           wTpy -> R20,R21
+ 03E4           ;           wTpx -> R20,R21
+                        .even
+ 03E4           _tTouchPen::
+ 03E4 00D0              rcall push_gset1
+ 03E6                   .dbline -1
+ 03E6                   .dbline 697
+ 03E6           ; 
+ 03E6           ; }
+ 03E6           ; 
+ 03E6           ; //--------------------------
+ 03E6           ; // timerInterrupt
+ 03E6           ; // 20ms
+ 03E6           ; //--------------------------
+ 03E6           ; void timerInterrupt(void)
+ 03E6           ; {
+ 03E6           ;               static unsigned char b10cnt = 0;
+ 03E6           ;               static unsigned char b10cnt1 = 0;
+ 03E6           ; 
+ 03E6           ;               //b10cnt++;
+ 03E6           ;               //if (b10cnt > 100)
+ 03E6           ;               //{
+ 03E6           ;               //      b10cnt = 0;
+ 03E6           ;               //      //toggleLed_Dbg();      
+ 03E6           ;               //}
+ 03E6           ; 
+ 03E6           ;               b10cnt1++;
+ 03E6           ;               if (b10cnt1 > 1)
+ 03E6           ;               {
+ 03E6           ;                       b10cnt1 = 0;
+ 03E6           ;                       tTouchPen();
+ 03E6           ;               }
+ 03E6           ; 
+ 03E6           ; 
+ 03E6           ; }
+ 03E6           ; 
+ 03E6           ; //--------------------------
+ 03E6           ; // tTouchPen
+ 03E6           ; // 
+ 03E6           ; //--------------------------
+ 03E6           ; void tTouchPen(void)
+ 03E6           ; {
+ 03E6                   .dbline 705
+ 03E6 40910800          lds R20,L74
+ 03EA 5527              clr R21
+ 03EC 4030              cpi R20,0
+ 03EE 4507              cpc R20,R21
+ 03F0 A1F0              breq L78
+ 03F2           X5:
+ 03F2 4130              cpi R20,1
+ 03F4 E0E0              ldi R30,0
+ 03F6 5E07              cpc R21,R30
+ 03F8 09F4              brne X7
+ 03FA 35C0              rjmp L85
+ 03FC           X7:
+ 03FC 4230              cpi R20,2
+ 03FE E0E0              ldi R30,0
+ 0400 5E07              cpc R21,R30
+ 0402 09F4              brne X8
+ 0404 30C0              rjmp L85
+ 0406           X8:
+ 0406 4330              cpi R20,3
+ 0408 E0E0              ldi R30,0
+ 040A 5E07              cpc R21,R30
+ 040C 61F1              breq L85
+ 040E 4430              cpi R20,4
+ 0410 E0E0              ldi R30,0
+ 0412 5E07              cpc R21,R30
+ 0414 09F4              brne X9
+ 0416 3DC0              rjmp L90
+ 0418           X9:
+ 0418 44C0              rjmp L75
+ 041A           X6:
+ 041A                   .dbline 705
+ 041A           ;               
+ 041A           ;               unsigned short wTpx;
+ 041A           ;               unsigned short wTpy;
+ 041A           ; 
+ 041A           ;               static unsigned char bPenState = 0;
+ 041A           ; 
+ 041A           ; 
+ 041A           ;               switch(bPenState) {
+ 041A           L78:
+ 041A                   .dbline 709
+ 041A           ; 
+ 041A           ;               case  0:
+ 041A           ; 
+ 041A           ;                       if (IsPenWritting())
+ 041A 31DF              rcall _IsPenWritting
+ 041C 0023              tst R16
+ 041E F9F0              breq L79
+ 0420                   .dbline 710
+ 0420           ;                       {               
+ 0420                   .dbline 713
+ 0420           ;                               //toggleLed_Dbg();
+ 0420           ; 
+ 0420           ;                               wTpx = GetTouchpenX();
+ 0420 83DF              rcall _GetTouchpenX
+ 0422 A801              movw R20,R16
+ 0424                   .dbline 715
+ 0424           ;                               
+ 0424           ;                               bHandWriteData[0] = wTpx & 0xff;
+ 0424 CA01              movw R24,R20
+ 0426 9070              andi R25,0
+ 0428 80930900          sts _bHandWriteData,R24
+ 042C                   .dbline 716
+ 042C           ;                               bHandWriteData[1] = wTpx >> 8;
+ 042C 1A01              movw R2,R20
+ 042E 232C              mov R2,R3
+ 0430 3324              clr R3
+ 0432 20920A00          sts _bHandWriteData+1,R2
+ 0436                   .dbline 718
+ 0436           ; 
+ 0436           ;                               wTpy = GetTouchpenY();
+ 0436 29DF              rcall _GetTouchpenY
+ 0438 A801              movw R20,R16
+ 043A                   .dbline 719
+ 043A           ;                               bHandWriteData[2] = wTpy & 0xff;
+ 043A CA01              movw R24,R20
+ 043C 9070              andi R25,0
+ 043E 80930B00          sts _bHandWriteData+2,R24
+ 0442                   .dbline 720
+ 0442           ;                               bHandWriteData[3] = wTpy >> 8;
+ 0442 1A01              movw R2,R20
+ 0444 232C              mov R2,R3
+ 0446 3324              clr R3
+ 0448 20920C00          sts _bHandWriteData+3,R2
+ 044C                   .dbline 722
+ 044C           ; 
+ 044C           ;                               bHandWriteData[4] = 0x08;
+ 044C 88E0              ldi R24,8
+ 044E 80930D00          sts _bHandWriteData+4,R24
+ 0452                   .dbline 724
+ 0452           ; 
+ 0452           ;                               usbSetInterrupt(bHandWriteData, 5);
+ 0452 25E0              ldi R18,5
+ 0454 00E0              ldi R16,<_bHandWriteData
+ 0456 10E0              ldi R17,>_bHandWriteData
+ 0458 29D0              rcall _usbSetInterrupt
+ 045A                   .dbline 725
+ 045A           ;                               InitWritingDetection();
+ 045A 03DF              rcall _InitWritingDetection
+ 045C                   .dbline 727
+ 045C           ;               
+ 045C           ;                       }
+ 045C 25C0              rjmp L76
+ 045E           L79:
+ 045E                   .dbline 729
+ 045E           ;                       else
+ 045E           ;                       {
+ 045E                   .dbline 731
+ 045E           ; 
+ 045E           ;                               bPenState = 1;
+ 045E 81E0              ldi R24,1
+ 0460 80930800          sts L74,R24
+ 0464                   .dbline 732
+ 0464           ;                       }
+ 0464                   .dbline 734
+ 0464           ; 
+ 0464           ;                       break;
+ 0464 21C0              rjmp L76
+ 0466           L85:
+ 0466                   .dbline 740
+ 0466           ; 
+ 0466           ;               case 1:
+ 0466           ;               case 2:
+ 0466           ;               case 3:
+ 0466           ; 
+ 0466           ;                               bHandWriteData[0] = 0;
+ 0466 2224              clr R2
+ 0468 20920900          sts _bHandWriteData,R2
+ 046C                   .dbline 741
+ 046C           ;                               bHandWriteData[1] = 0;
+ 046C 20920A00          sts _bHandWriteData+1,R2
+ 0470                   .dbline 742
+ 0470           ;                               bHandWriteData[2] = 0;
+ 0470 20920B00          sts _bHandWriteData+2,R2
+ 0474                   .dbline 743
+ 0474           ;                               bHandWriteData[3] = 0;
+ 0474 20920C00          sts _bHandWriteData+3,R2
+ 0478                   .dbline 744
+ 0478           ;                               bHandWriteData[4] = 0;
+ 0478 20920D00          sts _bHandWriteData+4,R2
+ 047C                   .dbline 745
+ 047C           ;                               usbSetInterrupt(bHandWriteData, 5);
+ 047C 25E0              ldi R18,5
+ 047E 00E0              ldi R16,<_bHandWriteData
+ 0480 10E0              ldi R17,>_bHandWriteData
+ 0482 14D0              rcall _usbSetInterrupt
+ 0484                   .dbline 746
+ 0484           ;                               InitWritingDetection();         
+ 0484 EEDE              rcall _InitWritingDetection
+ 0486                   .dbline 747
+ 0486           ;                               bPenState++;
+ 0486 80910800          lds R24,L74
+ 048A 8F5F              subi R24,255    ; addi 1
+ 048C 80930800          sts L74,R24
+ 0490                   .dbline 749
+ 0490           ; 
+ 0490           ;                               break;          
+ 0490 0BC0              rjmp L76
+ 0492           L90:
+ 0492                   .dbline 752
+ 0492           ; 
+ 0492           ;               case 4:
+ 0492           ;                       InitWritingDetection();
+ 0492 E7DE              rcall _InitWritingDetection
+ 0494                   .dbline 753
+ 0494           ;                       if (IsPenWritting())
+ 0494 F4DE              rcall _IsPenWritting
+ 0496 0023              tst R16
+ 0498 39F0              breq L76
+ 049A                   .dbline 754
+ 049A           ;                               bPenState = 0;
+ 049A 2224              clr R2
+ 049C 20920800          sts L74,R2
+ 04A0                   .dbline 756
+ 04A0           ; 
+ 04A0           ;                       break;
+ 04A0 03C0              rjmp L76
+ 04A2           L75:
+ 04A2                   .dbline 759
+ 04A2 80E1              ldi R24,16
+ 04A4 80930800          sts L74,R24
+ 04A8                   .dbline 761
+ 04A8           L76:
+ 04A8                   .dbline -2
+ 04A8           L73:
+ 04A8 00D0              rcall pop_gset1
+ 04AA                   .dbline 0 ; func end
+ 04AA 0895              ret
+ 04AC                   .dbsym r wTpy 20 s
+ 04AC                   .dbsym r wTpx 20 s
+ 04AC                   .dbend
+ 04AC                   .dbfunc e usbSetInterrupt _usbSetInterrupt fV
+ 04AC           ;       checksum -> R20
+ 04AC           ;              i -> R22
+ 04AC           ;            len -> R10
+ 04AC           ;           pBuf -> R12,R13
+                        .even
+ 04AC           _usbSetInterrupt::
+ 04AC 00D0              rcall push_gset4
+ 04AE A22E              mov R10,R18
+ 04B0 6801              movw R12,R16
+ 04B2                   .dbline -1
+ 04B2                   .dbline 768
+ 04B2           ; 
+ 04B2           ;               default:
+ 04B2           ;                               bPenState = 16;         
+ 04B2           ; 
+ 04B2           ;                       break;          
+ 04B2           ; 
+ 04B2           ; 
+ 04B2           ;               }
+ 04B2           ;               
+ 04B2           ; }
+ 04B2           ; 
+ 04B2           ; void usbSetInterrupt(byte* pBuf, byte len){
+ 04B2                   .dbline 770
+ 04B2           ;        byte i;
+ 04B2           ;        byte checksum = 0;
+ 04B2 4427              clr R20
+ 04B4                   .dbline 771
+ 04B4           ;        for(i=0; i<len; i++)
+ 04B4 6627              clr R22
+ 04B6 07C0              rjmp L97
+ 04B8           L94:
+ 04B8                   .dbline 772
+ 04B8 E62F              mov R30,R22
+ 04BA FF27              clr R31
+ 04BC EC0D              add R30,R12
+ 04BE FD1D              adc R31,R13
+ 04C0 2080              ldd R2,z+0
+ 04C2 420D              add R20,R2
+ 04C4           L95:
+ 04C4                   .dbline 771
+ 04C4 6395              inc R22
+ 04C6           L97:
+ 04C6                   .dbline 771
+ 04C6 6A15              cp R22,R10
+ 04C8 B8F3              brlo L94
+ 04CA                   .dbline 774
+ 04CA           ;               checksum += pBuf[i];
+ 04CA           ; 
+ 04CA           ;       uart_tx(0x55);
+ 04CA 05E5              ldi R16,85
+ 04CC 00D0              rcall _uart_tx
+ 04CE                   .dbline 775
+ 04CE           ;       uart_tx(0x55);  
+ 04CE 05E5              ldi R16,85
+ 04D0 00D0              rcall _uart_tx
+ 04D2                   .dbline 776
+ 04D2           ;       uart_tx(0x55);
+ 04D2 05E5              ldi R16,85
+ 04D4 00D0              rcall _uart_tx
+ 04D6                   .dbline 777
+ 04D6           ;       uart_tx(0xaa);    
+ 04D6 0AEA              ldi R16,170
+ 04D8 00D0              rcall _uart_tx
+ 04DA                   .dbline 778
+ 04DA           ;        for(i=0; i<len; i++)
+ 04DA 6627              clr R22
+ 04DC 07C0              rjmp L101
+ 04DE           L98:
+ 04DE                   .dbline 779
+ 04DE E62F              mov R30,R22
+ 04E0 FF27              clr R31
+ 04E2 EC0D              add R30,R12
+ 04E4 FD1D              adc R31,R13
+ 04E6 0081              ldd R16,z+0
+ 04E8 00D0              rcall _uart_tx
+ 04EA           L99:
+ 04EA                   .dbline 778
+ 04EA 6395              inc R22
+ 04EC           L101:
+ 04EC                   .dbline 778
+ 04EC 6A15              cp R22,R10
+ 04EE B8F3              brlo L98
+ 04F0                   .dbline 780
+ 04F0           ;          uart_tx(pBuf[i]);
+ 04F0           ;       uart_tx(checksum);
+ 04F0 042F              mov R16,R20
+ 04F2 00D0              rcall _uart_tx
+ 04F4                   .dbline -2
+ 04F4           L93:
+ 04F4 00D0              rcall pop_gset4
+ 04F6                   .dbline 0 ; func end
+ 04F6 0895              ret
+ 04F8                   .dbsym r checksum 20 c
+ 04F8                   .dbsym r i 22 c
+ 04F8                   .dbsym r len 10 c
+ 04F8                   .dbsym r pBuf 12 pc
+ 04F8                   .dbend
+                        .area bss(ram, con, rel)
+ 0001                   .dbfile C:\DOCUME~1\www\桌面\电热水控制板\固件\v001\m8.c
+ 0001           _bRfSendPackage::
+ 0001                   .blkb 8
+ 0009                   .dbsym e bRfSendPackage _bRfSendPackage A[8:8]c
+ 0009           _bHandWriteData::
+ 0009                   .blkb 5
+ 000E                   .dbsym e bHandWriteData _bHandWriteData A[5:5]c
+ 000E           _bHighHalfByte::
+ 000E                   .blkb 1
+ 000F                   .dbsym e bHighHalfByte _bHighHalfByte c
+ 000F           _bitIsHighHalfByte::
+ 000F                   .blkb 1
+ 0010                   .dbsym e bitIsHighHalfByte _bitIsHighHalfByte c
+ 0010           _in_buffer::
+ 0010                   .blkb 32
+ 0030                   .dbsym e in_buffer _in_buffer A[32:32]c
+ 0030           _bTaskFlag::
+ 0030                   .blkb 1
+ 0031                   .dbsym e bTaskFlag _bTaskFlag c

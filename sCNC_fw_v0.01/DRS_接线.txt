@@ -1,0 +1,20 @@
+// FW°æ±¾ 1.04
+// INPUT
+// DB9 pin5  -- short 1
+// DB9 pin4  -- short 2
+// DB9 pin3 -- long 1
+// DB9 pin2 -- long 2
+// DB9 pin1 -- hot_water
+// DB9 pin8 -- GND
+
+// LEDs
+//J8 pin 1   +5V
+//J8 pin 2   GND
+//J8 pin 3   
+//J8 pin 4   NC
+//J8 pin 5   power led
+//J8 pin 6   low water led
+//J8 pin 7   hotting led
+//J8 pin 8   error led
+//[pin1] ---|?¡¤---- [pin5,6,7,8]
+

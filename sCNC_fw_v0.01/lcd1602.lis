@@ -1,0 +1,630 @@
+                        .module lcd1602.c
+                        .area data(ram, con, rel)
+ 0000           _bShowLcdState::
+ 0000                   .blkb 1
+                        .area idata
+ 0000 00                .byte 0
+                        .area data(ram, con, rel)
+ 0001                   .dbfile C:\DOCUME~1\www\桌面\电热水控制板\固件\v001\lcd1602.c
+ 0001                   .dbsym e bShowLcdState _bShowLcdState c
+                        .area lit(rom, con, rel)
+ 0000           _lcdlogo:
+ 0000 2020              .byte 32,32
+ 0002 2020              .byte 32,32
+ 0004 2049              .byte 32,'I
+ 0006 5032              .byte 'P,50
+ 0008 4C43              .byte 'L,'C
+ 000A 4420              .byte 'D,32
+ 000C 2020              .byte 32,32
+ 000E 2020              .byte 32,32
+ 0010 2020              .byte 32,32
+ 0012 2020              .byte 32,32
+ 0014 2056              .byte 32,'V
+ 0016 312E              .byte 49,46
+ 0018 3030              .byte 48,48
+ 001A 2020              .byte 32,32
+ 001C 2020              .byte 32,32
+ 001E 2020              .byte 32,32
+ 0020                   .dbsym s lcdlogo _lcdlogo A[32:32]kc
+                        .area text(rom, con, rel)
+ 0000                   .dbfile C:\DOCUME~1\www\桌面\电热水控制板\固件\v001\lcd1602.c
+ 0000                   .dbfunc e SetLCM_RS _SetLCM_RS fV
+ 0000           ;            dat -> R16
+                        .even
+ 0000           _SetLCM_RS::
+ 0000                   .dbline -1
+ 0000                   .dbline 27
+ 0000           ; ////////////////////////////////////////////////////////////////////////////////
+ 0000           ; // LCD1602
+ 0000           ; // Copyright(c) 2007 by Aixi.Wang, All rights reserved.
+ 0000           ; ////////////////////////////////////////////////////////////////////////////////
+ 0000           ; 
+ 0000           ; #include <iom8v.h>
+ 0000           ; #include <macros.h>
+ 0000           ; 
+ 0000           ; #include "typedef.h"
+ 0000           ; #include "lcd1602.h"
+ 0000           ; //#include "main.h"
+ 0000           ; 
+ 0000           ; 
+ 0000           ; //--------------------------------------------------------------------------------
+ 0000           ; // LCD1602点阵字符型LCD模块Keil C51驱动程序
+ 0000           ; //--------------------------------------------------------------------------------  
+ 0000           ;   
+ 0000           ; byte bShowLcdState = 0;
+ 0000           ; unsigned char lcd_line1[16];
+ 0000           ; unsigned char lcd_line2[16];
+ 0000           ; 
+ 0000           ; 
+ 0000           ; static const unsigned char lcdlogo[32] = {
+ 0000           ;                                                                                               ' ',' ',' ',' ',' ','I','P','2','L','C','D',' ',' ',' ',' ',' ',
+ 0000           ;                                                                                               ' ',' ',' ',' ',' ','V','1','.','0','0',' ',' ',' ',' ',' ',' '};
+ 0000           ; 
+ 0000           ; void SetLCM_RS(unsigned char dat){
+ 0000                   .dbline 29
+ 0000           ; //PB4 LCM_RS (output)
+ 0000           ;       if (dat)
+ 0000 0023              tst R16
+ 0002 11F0              breq L2
+ 0004                   .dbline 30
+ 0004           ;               PORTB |= BIT4;
+ 0004 C49A              sbi 0x18,4
+ 0006 01C0              rjmp L3
+ 0008           L2:
+ 0008                   .dbline 32
+ 0008 C498              cbi 0x18,4
+ 000A           L3:
+ 000A                   .dbline -2
+ 000A           L1:
+ 000A                   .dbline 0 ; func end
+ 000A 0895              ret
+ 000C                   .dbsym r dat 16 c
+ 000C                   .dbend
+ 000C                   .dbfunc e SetLCM_RW _SetLCM_RW fV
+ 000C           ;            dat -> R16
+                        .even
+ 000C           _SetLCM_RW::
+ 000C                   .dbline -1
+ 000C                   .dbline 36
+ 000C           ;       else
+ 000C           ;               PORTB &= ~BIT4;
+ 000C           ; 
+ 000C           ; }
+ 000C           ; 
+ 000C           ; void SetLCM_RW(unsigned char dat){
+ 000C                   .dbline 39
+ 000C           ; //PD5 LCM_RW   (output)
+ 000C           ; 
+ 000C           ;       if (dat)
+ 000C 0023              tst R16
+ 000E 11F0              breq L5
+ 0010                   .dbline 40
+ 0010           ;               PORTD |= BIT5;
+ 0010 959A              sbi 0x12,5
+ 0012 01C0              rjmp L6
+ 0014           L5:
+ 0014                   .dbline 42
+ 0014 9598              cbi 0x12,5
+ 0016           L6:
+ 0016                   .dbline -2
+ 0016           L4:
+ 0016                   .dbline 0 ; func end
+ 0016 0895              ret
+ 0018                   .dbsym r dat 16 c
+ 0018                   .dbend
+ 0018                   .dbfunc e SetLCM_EN _SetLCM_EN fV
+ 0018           ;            dat -> R16
+                        .even
+ 0018           _SetLCM_EN::
+ 0018                   .dbline -1
+ 0018                   .dbline 47
+ 0018           ;       else
+ 0018           ;               PORTD &= ~BIT5;
+ 0018           ; 
+ 0018           ; 
+ 0018           ; }
+ 0018           ; 
+ 0018           ; void SetLCM_EN(unsigned char dat){
+ 0018                   .dbline 50
+ 0018           ; //PB5 LCM_EN (output)
+ 0018           ; 
+ 0018           ;       if (dat)
+ 0018 0023              tst R16
+ 001A 11F0              breq L8
+ 001C                   .dbline 51
+ 001C           ;               PORTB |= BIT5;
+ 001C C59A              sbi 0x18,5
+ 001E 01C0              rjmp L9
+ 0020           L8:
+ 0020                   .dbline 53
+ 0020 C598              cbi 0x18,5
+ 0022           L9:
+ 0022                   .dbline -2
+ 0022           L7:
+ 0022                   .dbline 0 ; func end
+ 0022 0895              ret
+ 0024                   .dbsym r dat 16 c
+ 0024                   .dbend
+ 0024                   .dbfunc e SetLCM_DATA _SetLCM_DATA fV
+ 0024           ;              c -> R20
+ 0024           ;            dat -> R16
+                        .even
+ 0024           _SetLCM_DATA::
+ 0024 00D0              rcall push_gset1
+ 0026                   .dbline -1
+ 0026                   .dbline 57
+ 0026           ;       else
+ 0026           ;               PORTB &= ~BIT5;
+ 0026           ; 
+ 0026           ; }
+ 0026           ; 
+ 0026           ; void SetLCM_DATA(unsigned char dat){
+ 0026                   .dbline 70
+ 0026           ; //PB0 LCM_D4 (output)
+ 0026           ; //PB1 LCM_D5 (output)
+ 0026           ; //PB2 LCM_D6 (output)
+ 0026           ; //PB3 LCM_D7 (output)
+ 0026           ; //
+ 0026           ; //PC0 LCM_D0 (output)
+ 0026           ; //PC1 LCM_D1 (output)
+ 0026           ; //PC2 LCM_D2 (output)
+ 0026           ; //PC3 LCM_D3 (output)
+ 0026           ; 
+ 0026           ;       byte c;
+ 0026           ; 
+ 0026           ;       c = dat >> 4;
+ 0026 402F              mov R20,R16
+ 0028 4295              swap R20
+ 002A 4F70              andi R20,#0x0F
+ 002C                   .dbline 71
+ 002C           ;       PORTB &= 0xf0;
+ 002C 88B3              in R24,0x18
+ 002E 807F              andi R24,240
+ 0030 88BB              out 0x18,R24
+ 0032                   .dbline 72
+ 0032           ;       PORTB |= c;
+ 0032 28B2              in R2,0x18
+ 0034 242A              or R2,R20
+ 0036 28BA              out 0x18,R2
+ 0038                   .dbline 74
+ 0038           ; 
+ 0038           ;       c = dat & 0x0f;
+ 0038 402F              mov R20,R16
+ 003A 4F70              andi R20,15
+ 003C                   .dbline 75
+ 003C           ;       PORTC &= 0xf0;
+ 003C 85B3              in R24,0x15
+ 003E 807F              andi R24,240
+ 0040 85BB              out 0x15,R24
+ 0042                   .dbline 76
+ 0042           ;       PORTC |= c;
+ 0042 25B2              in R2,0x15
+ 0044 242A              or R2,R20
+ 0046 25BA              out 0x15,R2
+ 0048                   .dbline -2
+ 0048           L10:
+ 0048 00D0              rcall pop_gset1
+ 004A                   .dbline 0 ; func end
+ 004A 0895              ret
+ 004C                   .dbsym r c 20 c
+ 004C                   .dbsym r dat 16 c
+ 004C                   .dbend
+ 004C                   .dbfunc e delayus _delayus fV
+ 004C           ;              i -> R16,R17
+                        .even
+ 004C           _delayus::
+ 004C                   .dbline -1
+ 004C                   .dbline 81
+ 004C           ; 
+ 004C           ; 
+ 004C           ; }
+ 004C           ; 
+ 004C           ; void delayus(void){
+ 004C                   .dbline 83
+ 004C 0027              clr R16
+ 004E 1127              clr R17
+ 0050           L12:
+ 0050                   .dbline 83
+ 0050                   .dbline 83
+ 0050           L13:
+ 0050                   .dbline 83
+ 0050           ;  int i;
+ 0050           ;  for (i=0;i<12;i++){};
+ 0050 0F5F              subi R16,255  ; offset = 1
+ 0052 1F4F              sbci R17,255
+ 0054                   .dbline 83
+ 0054 0C30              cpi R16,12
+ 0056 E0E0              ldi R30,0
+ 0058 1E07              cpc R17,R30
+ 005A D4F3              brlt L12
+ 005C                   .dbline 83
+ 005C                   .dbline -2
+ 005C           L11:
+ 005C                   .dbline 0 ; func end
+ 005C 0895              ret
+ 005E                   .dbsym r i 16 I
+ 005E                   .dbend
+ 005E                   .dbfunc e delay5ms _delay5ms fV
+ 005E           ;              i -> R20,R21
+ 005E           ;              j -> R22,R23
+                        .even
+ 005E           _delay5ms::
+ 005E 00D0              rcall push_gset2
+ 0060                   .dbline -1
+ 0060                   .dbline 91
+ 0060           ; 
+ 0060           ; }
+ 0060           ; 
+ 0060           ; //-----------------------
+ 0060           ; // delay5ms
+ 0060           ; //-----------------------
+ 0060           ; void delay5ms(void)
+ 0060           ; {
+ 0060                   .dbline 93
+ 0060           ;  word i,j;
+ 0060           ;  for(i=0; i<5; i++)
+ 0060 4427              clr R20
+ 0062 5527              clr R21
+ 0064 0CC0              rjmp L20
+ 0066           L17:
+ 0066                   .dbline 94
+ 0066           ;  for (j=0;j<100;j++)
+ 0066 6627              clr R22
+ 0068 7727              clr R23
+ 006A 03C0              rjmp L24
+ 006C           L21:
+ 006C                   .dbline 95
+ 006C                   .dbline 96
+ 006C EFDF              rcall _delayus
+ 006E                   .dbline 97
+ 006E           L22:
+ 006E                   .dbline 94
+ 006E 6F5F              subi R22,255  ; offset = 1
+ 0070 7F4F              sbci R23,255
+ 0072           L24:
+ 0072                   .dbline 94
+ 0072 6436              cpi R22,100
+ 0074 E0E0              ldi R30,0
+ 0076 7E07              cpc R23,R30
+ 0078 C8F3              brlo L21
+ 007A           L18:
+ 007A                   .dbline 93
+ 007A 4F5F              subi R20,255  ; offset = 1
+ 007C 5F4F              sbci R21,255
+ 007E           L20:
+ 007E                   .dbline 93
+ 007E 4530              cpi R20,5
+ 0080 E0E0              ldi R30,0
+ 0082 5E07              cpc R21,R30
+ 0084 80F3              brlo L17
+ 0086                   .dbline -2
+ 0086           L16:
+ 0086 00D0              rcall pop_gset2
+ 0088                   .dbline 0 ; func end
+ 0088 0895              ret
+ 008A                   .dbsym r i 20 s
+ 008A                   .dbsym r j 22 s
+ 008A                   .dbend
+ 008A                   .dbfunc e delay50us _delay50us fV
+ 008A           ;              i -> R20,R21
+                        .even
+ 008A           _delay50us::
+ 008A 00D0              rcall push_gset1
+ 008C                   .dbline -1
+ 008C                   .dbline 107
+ 008C           ;  {
+ 008C           ;        delayus();
+ 008C           ;  }
+ 008C           ;        //wdt_reset();
+ 008C           ;        //WDR();
+ 008C           ;  }
+ 008C           ; 
+ 008C           ; 
+ 008C           ; //-----------------------
+ 008C           ; // delay50us
+ 008C           ; //-----------------------
+ 008C           ; void delay50us(void)
+ 008C           ; {
+ 008C                   .dbline 109
+ 008C           ;  word i;
+ 008C           ;  for (i=0;i<50;i++)
+ 008C 4427              clr R20
+ 008E 5527              clr R21
+ 0090 03C0              rjmp L29
+ 0092           L26:
+ 0092                   .dbline 110
+ 0092                   .dbline 111
+ 0092 DCDF              rcall _delayus
+ 0094                   .dbline 112
+ 0094           L27:
+ 0094                   .dbline 109
+ 0094 4F5F              subi R20,255  ; offset = 1
+ 0096 5F4F              sbci R21,255
+ 0098           L29:
+ 0098                   .dbline 109
+ 0098 4233              cpi R20,50
+ 009A E0E0              ldi R30,0
+ 009C 5E07              cpc R21,R30
+ 009E C8F3              brlo L26
+ 00A0                   .dbline -2
+ 00A0           L25:
+ 00A0 00D0              rcall pop_gset1
+ 00A2                   .dbline 0 ; func end
+ 00A2 0895              ret
+ 00A4                   .dbsym r i 20 s
+ 00A4                   .dbend
+ 00A4                   .dbfunc e wr_com _wr_com fV
+ 00A4           ;           comm -> R20
+                        .even
+ 00A4           _wr_com::
+ 00A4 00D0              rcall push_gset1
+ 00A6 402F              mov R20,R16
+ 00A8                   .dbline -1
+ 00A8                   .dbline 122
+ 00A8           ;  {    
+ 00A8           ;        delayus();
+ 00A8           ;  }
+ 00A8           ; //wdt_reset();
+ 00A8           ;    //WDR();
+ 00A8           ; }
+ 00A8           ; 
+ 00A8           ; //-----------------------
+ 00A8           ; // wr_com
+ 00A8           ; //-----------------------
+ 00A8           ; void 
+ 00A8           ; wr_com(unsigned char comm)
+ 00A8           ; {
+ 00A8                   .dbline 125
+ 00A8           ; 
+ 00A8           ; // 8bit
+ 00A8           ;   LCDE_L;
+ 00A8 0027              clr R16
+ 00AA B6DF              rcall _SetLCM_EN
+ 00AC                   .dbline 126
+ 00AC           ;   RS_L;
+ 00AC 0027              clr R16
+ 00AE A8DF              rcall _SetLCM_RS
+ 00B0                   .dbline 127
+ 00B0           ;   RW_L;
+ 00B0 0027              clr R16
+ 00B2 ACDF              rcall _SetLCM_RW
+ 00B4                   .dbline 128
+ 00B4           ;   LCDE_H;
+ 00B4 01E0              ldi R16,1
+ 00B6 B0DF              rcall _SetLCM_EN
+ 00B8                   .dbline 129
+ 00B8           ;   SET_LCMDATA(comm);
+ 00B8 042F              mov R16,R20
+ 00BA B4DF              rcall _SetLCM_DATA
+ 00BC                   .dbline 130
+ 00BC           ;   delay50us();
+ 00BC E6DF              rcall _delay50us
+ 00BE                   .dbline 131
+ 00BE           ;   LCDE_L;
+ 00BE 0027              clr R16
+ 00C0 ABDF              rcall _SetLCM_EN
+ 00C2                   .dbline 132
+ 00C2           ;   delay5ms();
+ 00C2 CDDF              rcall _delay5ms
+ 00C4                   .dbline -2
+ 00C4           L30:
+ 00C4 00D0              rcall pop_gset1
+ 00C6                   .dbline 0 ; func end
+ 00C6 0895              ret
+ 00C8                   .dbsym r comm 20 c
+ 00C8                   .dbend
+ 00C8                   .dbfunc e wr_data _wr_data fV
+ 00C8           ;            dat -> R20
+                        .even
+ 00C8           _wr_data::
+ 00C8 00D0              rcall push_gset1
+ 00CA 402F              mov R20,R16
+ 00CC                   .dbline -1
+ 00CC                   .dbline 143
+ 00CC           ;   //delay50us();
+ 00CC           ; 
+ 00CC           ; 
+ 00CC           ; 
+ 00CC           ; }
+ 00CC           ; //-----------------------
+ 00CC           ; // wr_data
+ 00CC           ; //-----------------------
+ 00CC           ; void 
+ 00CC           ; wr_data(unsigned char dat)
+ 00CC           ; {
+ 00CC                   .dbline 144
+ 00CC           ;   LCDE_L;
+ 00CC 0027              clr R16
+ 00CE A4DF              rcall _SetLCM_EN
+ 00D0                   .dbline 145
+ 00D0           ;   RW_L;
+ 00D0 0027              clr R16
+ 00D2 9CDF              rcall _SetLCM_RW
+ 00D4                   .dbline 146
+ 00D4           ;   RS_H;
+ 00D4 01E0              ldi R16,1
+ 00D6 94DF              rcall _SetLCM_RS
+ 00D8                   .dbline 147
+ 00D8           ;   LCDE_H; 
+ 00D8 01E0              ldi R16,1
+ 00DA 9EDF              rcall _SetLCM_EN
+ 00DC                   .dbline 148
+ 00DC           ;   SET_LCMDATA(dat);
+ 00DC 042F              mov R16,R20
+ 00DE A2DF              rcall _SetLCM_DATA
+ 00E0                   .dbline 149
+ 00E0           ;   delay50us();
+ 00E0 D4DF              rcall _delay50us
+ 00E2                   .dbline 150
+ 00E2           ;   LCDE_L;
+ 00E2 0027              clr R16
+ 00E4 99DF              rcall _SetLCM_EN
+ 00E6                   .dbline 151
+ 00E6           ;   RS_L;
+ 00E6 0027              clr R16
+ 00E8 8BDF              rcall _SetLCM_RS
+ 00EA                   .dbline 152
+ 00EA           ;   delay5ms();
+ 00EA B9DF              rcall _delay5ms
+ 00EC                   .dbline -2
+ 00EC           L31:
+ 00EC 00D0              rcall pop_gset1
+ 00EE                   .dbline 0 ; func end
+ 00EE 0895              ret
+ 00F0                   .dbsym r dat 20 c
+ 00F0                   .dbend
+ 00F0                   .dbfunc e init_lcd1602 _init_lcd1602 fV
+ 00F0           ;              i -> <dead>
+                        .even
+ 00F0           _init_lcd1602::
+ 00F0                   .dbline -1
+ 00F0                   .dbline 162
+ 00F0           ;   //delay50us();
+ 00F0           ; 
+ 00F0           ; }
+ 00F0           ; 
+ 00F0           ; 
+ 00F0           ; //--------------------------
+ 00F0           ; // init_lcd1602
+ 00F0           ; //--------------------------
+ 00F0           ; void init_lcd1602(void)
+ 00F0           ; {
+ 00F0                   .dbline 166
+ 00F0           ;  unsigned char i;
+ 00F0           ;  //char       init_logo[32];
+ 00F0           ; 
+ 00F0           ;  delay5ms();
+ 00F0 B6DF              rcall _delay5ms
+ 00F2                   .dbline 168
+ 00F2           ; 
+ 00F2           ;  wr_com(0x38);        //设置显示模式:8位2行5x7点阵    
+ 00F2 08E3              ldi R16,56
+ 00F4 D7DF              rcall _wr_com
+ 00F6                   .dbline 169
+ 00F6           ;  delay5ms();
+ 00F6 B3DF              rcall _delay5ms
+ 00F8                   .dbline 170
+ 00F8           ;  wr_com(0x38);        //设置显示模式:8位2行5x7点阵    
+ 00F8 08E3              ldi R16,56
+ 00FA D4DF              rcall _wr_com
+ 00FC                   .dbline 171
+ 00FC           ;  wr_com(0x38);        //设置显示模式:8位2行5x7点阵 
+ 00FC 08E3              ldi R16,56
+ 00FE D2DF              rcall _wr_com
+ 0100                   .dbline 172
+ 0100           ;  wr_com(0x38);        //设置显示模式:8位2行5x7点阵 
+ 0100 08E3              ldi R16,56
+ 0102 D0DF              rcall _wr_com
+ 0104                   .dbline 175
+ 0104           ; 
+ 0104           ; // 8bit / 4bit
+ 0104           ;  wr_com(0x06);        //文字不动，光标自动右移
+ 0104 06E0              ldi R16,6
+ 0106 CEDF              rcall _wr_com
+ 0108                   .dbline 176
+ 0108           ;  wr_com(0x01);        //清屏并光标复位
+ 0108 01E0              ldi R16,1
+ 010A CCDF              rcall _wr_com
+ 010C                   .dbline 177
+ 010C           ;  wr_com(0x0c);        //显示器开、光标关、光标允许闪烁关      
+ 010C 0CE0              ldi R16,12
+ 010E CADF              rcall _wr_com
+ 0110                   .dbline -2
+ 0110           L32:
+ 0110                   .dbline 0 ; func end
+ 0110 0895              ret
+ 0112                   .dbsym l i 1 c
+ 0112                   .dbend
+ 0112                   .dbfunc e display_162 _display_162 fV
+ 0112           ;              i -> R20
+                        .even
+ 0112           _display_162::
+ 0112 00D0              rcall push_gset1
+ 0114                   .dbline -1
+ 0114                   .dbline 185
+ 0114           ; 
+ 0114           ; }
+ 0114           ; 
+ 0114           ; //-----------------------
+ 0114           ; // display_162
+ 0114           ; //----------------------- 
+ 0114           ; void display_162(void)
+ 0114           ; {
+ 0114                   .dbline 189
+ 0114           ;   unsigned char i;
+ 0114           ;   
+ 0114           ;   //WDR();
+ 0114           ;   wr_com(0x80);                       //set ram address, line1
+ 0114 00E8              ldi R16,128
+ 0116 C6DF              rcall _wr_com
+ 0118                   .dbline 191
+ 0118           ;   
+ 0118           ;   for(i=0;i<16;i++)
+ 0118 4427              clr R20
+ 011A 09C0              rjmp L37
+ 011C           L34:
+ 011C                   .dbline 192
+ 011C                   .dbline 193
+ 011C 80E0              ldi R24,<_lcd_line1
+ 011E 90E0              ldi R25,>_lcd_line1
+ 0120 E42F              mov R30,R20
+ 0122 FF27              clr R31
+ 0124 E80F              add R30,R24
+ 0126 F91F              adc R31,R25
+ 0128 0081              ldd R16,z+0
+ 012A CEDF              rcall _wr_data
+ 012C                   .dbline 194
+ 012C           L35:
+ 012C                   .dbline 191
+ 012C 4395              inc R20
+ 012E           L37:
+ 012E                   .dbline 191
+ 012E 4031              cpi R20,16
+ 0130 A8F3              brlo L34
+ 0132                   .dbline 196
+ 0132           ;   {
+ 0132           ;    wr_data(lcd_line1[i]);     //display "0"
+ 0132           ;    }
+ 0132           ; 
+ 0132           ;   wr_com(0xc0);                               // dispaly line2
+ 0132 00EC              ldi R16,192
+ 0134 B7DF              rcall _wr_com
+ 0136                   .dbline 198
+ 0136           ; 
+ 0136           ;   for(i=0;i<16;i++)
+ 0136 4427              clr R20
+ 0138 09C0              rjmp L41
+ 013A           L38:
+ 013A                   .dbline 199
+ 013A                   .dbline 200
+ 013A 80E0              ldi R24,<_lcd_line2
+ 013C 90E0              ldi R25,>_lcd_line2
+ 013E E42F              mov R30,R20
+ 0140 FF27              clr R31
+ 0142 E80F              add R30,R24
+ 0144 F91F              adc R31,R25
+ 0146 0081              ldd R16,z+0
+ 0148 BFDF              rcall _wr_data
+ 014A                   .dbline 201
+ 014A           L39:
+ 014A                   .dbline 198
+ 014A 4395              inc R20
+ 014C           L41:
+ 014C                   .dbline 198
+ 014C 4031              cpi R20,16
+ 014E A8F3              brlo L38
+ 0150                   .dbline -2
+ 0150           L33:
+ 0150 00D0              rcall pop_gset1
+ 0152                   .dbline 0 ; func end
+ 0152 0895              ret
+ 0154                   .dbsym r i 20 c
+ 0154                   .dbend
+                        .area bss(ram, con, rel)
+ 0000                   .dbfile C:\DOCUME~1\www\桌面\电热水控制板\固件\v001\lcd1602.c
+ 0000           _lcd_line2::
+ 0000                   .blkb 16
+ 0010                   .dbsym e lcd_line2 _lcd_line2 A[16:16]c
+ 0010           _lcd_line1::
+ 0010                   .blkb 16
+ 0020                   .dbsym e lcd_line1 _lcd_line1 A[16:16]c

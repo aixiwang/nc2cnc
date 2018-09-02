@@ -1,0 +1,927 @@
+                        .module drs.c
+                        .area data(ram, con, rel)
+ 0000           _bDrsStatus::
+ 0000                   .blkb 1
+                        .area idata
+ 0000 00                .byte 0
+                        .area data(ram, con, rel)
+ 0001                   .dbfile C:\DOCUME~1\awang\Desktop\Aixi_个人\myCNC\sCNC\fw\v0.01\drs.c
+ 0001                   .dbsym e bDrsStatus _bDrsStatus c
+ 0001           _wHotWaterCnt::
+ 0001                   .blkb 2
+                        .area idata
+ 0001 0000              .word 0
+                        .area data(ram, con, rel)
+ 0003                   .dbfile C:\DOCUME~1\awang\Desktop\Aixi_个人\myCNC\sCNC\fw\v0.01\drs.c
+ 0003                   .dbsym e wHotWaterCnt _wHotWaterCnt s
+ 0003           _wAddWaterCnt::
+ 0003                   .blkb 2
+                        .area idata
+ 0003 0000              .word 0
+                        .area data(ram, con, rel)
+ 0005                   .dbfile C:\DOCUME~1\awang\Desktop\Aixi_个人\myCNC\sCNC\fw\v0.01\drs.c
+ 0005                   .dbsym e wAddWaterCnt _wAddWaterCnt s
+ 0005           _wErrAlarmCnt::
+ 0005                   .blkb 2
+                        .area idata
+ 0005 0000              .word 0
+                        .area data(ram, con, rel)
+ 0007                   .dbfile C:\DOCUME~1\awang\Desktop\Aixi_个人\myCNC\sCNC\fw\v0.01\drs.c
+ 0007                   .dbsym e wErrAlarmCnt _wErrAlarmCnt s
+ 0007           _bErrRetryCnt::
+ 0007                   .blkb 1
+                        .area idata
+ 0007 00                .byte 0
+                        .area data(ram, con, rel)
+ 0008                   .dbfile C:\DOCUME~1\awang\Desktop\Aixi_个人\myCNC\sCNC\fw\v0.01\drs.c
+ 0008                   .dbsym e bErrRetryCnt _bErrRetryCnt c
+ 0008           _bHotRetryCnt::
+ 0008                   .blkb 1
+                        .area idata
+ 0008 00                .byte 0
+                        .area data(ram, con, rel)
+ 0009                   .dbfile C:\DOCUME~1\awang\Desktop\Aixi_个人\myCNC\sCNC\fw\v0.01\drs.c
+ 0009                   .dbsym e bHotRetryCnt _bHotRetryCnt c
+ 0009           _bWaterRetryCnt::
+ 0009                   .blkb 1
+                        .area idata
+ 0009 00                .byte 0
+                        .area data(ram, con, rel)
+ 000A                   .dbfile C:\DOCUME~1\awang\Desktop\Aixi_个人\myCNC\sCNC\fw\v0.01\drs.c
+ 000A                   .dbsym e bWaterRetryCnt _bWaterRetryCnt c
+                        .area text(rom, con, rel)
+ 0000                   .dbfile C:\DOCUME~1\awang\Desktop\Aixi_个人\myCNC\sCNC\fw\v0.01\drs.c
+ 0000                   .dbfunc e IsOverWater _IsOverWater fc
+                        .even
+ 0000           _IsOverWater::
+ 0000 00D0              rcall push_gset2
+ 0002                   .dbline -1
+ 0002                   .dbline 96
+ 0002           ; ////////////////////////////////////////////////////////////////////////////////
+ 0002           ; // DRS
+ 0002           ; // Copyright(c) 2008 by Aixi.Wang, All rights reserved.
+ 0002           ; // V1.00 -- 06/08/2008
+ 0002           ; // V1.02 -- 06/20/2008
+ 0002           ; // V1.03 -- 06/20/2008 change water detection method
+ 0002           ; //
+ 0002           ; // V1.04 
+ 0002           ; // ---------------------------------------------------
+ 0002           ; // 1. remove power off status
+ 0002           ; // 2. add hot,water relay debounce ( 500ms debounce )
+ 0002           ; // 3. modify err process
+ 0002           ; //
+ 0002           ; // V1.05 
+ 0002           ; // ---------------------------------------------------
+ 0002           ; // 1. improve hotwater relay control
+ 0002           ; 
+ 0002           ; // V1.06 
+ 0002           ; // ---------------------------------------------------
+ 0002           ; // 1. modify debounce timer to 300ms
+ 0002           ; // 2. fix relay issue
+ 0002           ; // 3. remove ChkHotWaterTimeout
+ 0002           ; // 4. 15VAC 处电流0.19A
+ 0002           ; // 5. 5V处 20mA-30mA
+ 0002           ; 
+ 0002           ; // V1.07
+ 0002           ; // ------------------------------------------------------
+ 0002           ; // 1. update hotwater debounce timer to 600ms
+ 0002           ; 
+ 0002           ; ////////////////////////////////////////////////////////////////////////////////
+ 0002           ; #include <iom8v.h>
+ 0002           ; #include <macros.h>
+ 0002           ; 
+ 0002           ; #include "typedef.h"
+ 0002           ; #include "serial.h"
+ 0002           ; #include "main.h"
+ 0002           ; 
+ 0002           ; #include "drs.h"
+ 0002           ; 
+ 0002           ; 
+ 0002           ; 
+ 0002           ; byte bDrsStatus = 0;
+ 0002           ; 
+ 0002           ; word wAdValue[6];
+ 0002           ; // AD0 high water 1  -- short 1
+ 0002           ; // AD1 high water 2  -- short 2
+ 0002           ; // AD2 low water 1   -- long 1
+ 0002           ; // AD3 low water 2   -- long 2
+ 0002           ; // AD4 hot water out     -- 
+ 0002           ; 
+ 0002           ; // INPUT
+ 0002           ; // DB9 pin5  -- short 1
+ 0002           ; // DB9 pin4  -- short 2
+ 0002           ; // DB9 pin3 -- long 1
+ 0002           ; // DB9 pin2 -- long 2
+ 0002           ; // DB9 pin1 -- hot_water
+ 0002           ; // DB9 pin8 -- GND
+ 0002           ; 
+ 0002           ; // LEDs
+ 0002           ; //J8 pin 1   +5V
+ 0002           ; //J8 pin 2   GND
+ 0002           ; //J8 pin 3   
+ 0002           ; //J8 pin 4   NC
+ 0002           ; //J8 pin 5   power led
+ 0002           ; //J8 pin 6   low water led
+ 0002           ; //J8 pin 7   hotting led
+ 0002           ; //J8 pin 8   error led
+ 0002           ; //[pin1] ---|》---- [pin5,6,7,8]
+ 0002           ; 
+ 0002           ; 
+ 0002           ; word wHotWaterCnt = 0;
+ 0002           ; word wAddWaterCnt = 0;
+ 0002           ; word wErrAlarmCnt = 0;
+ 0002           ; 
+ 0002           ; byte bErrRetryCnt = 0;
+ 0002           ; 
+ 0002           ; byte bHotRetryCnt = 0;
+ 0002           ; byte bWaterRetryCnt = 0;
+ 0002           ; 
+ 0002           ; 
+ 0002           ; //=============================================================================
+ 0002           ; //                                     H A L
+ 0002           ; //=============================================================================
+ 0002           ; #define IN_HIGH_WATER_LIMIT_AD                  40*1024L/50
+ 0002           ; #define IN_LOW_WATER_LIMIT_AD                  40*1024L/50
+ 0002           ; 
+ 0002           ; 
+ 0002           ; //---------------------
+ 0002           ; // IsOverWater
+ 0002           ; // return: 0 -: no
+ 0002           ; //         1 -: yes
+ 0002           ; //         2 -: error
+ 0002           ; //---------------------
+ 0002           ; 
+ 0002           ; byte 
+ 0002           ; IsOverWater(void){
+ 0002                   .dbline 99
+ 0002           ; 
+ 0002           ; #if 1
+ 0002           ;                                 if ( (wAdValue[0] < IN_HIGH_WATER_LIMIT_AD ) || ( wAdValue[1] < IN_HIGH_WATER_LIMIT_AD) )
+ 0002 43E3              ldi R20,51
+ 0004 53E0              ldi R21,3
+ 0006 60E0              ldi R22,0
+ 0008 70E0              ldi R23,0
+ 000A 20900000          lds R2,_wAdValue
+ 000E 30900100          lds R3,_wAdValue+1
+ 0012 4424              clr R4
+ 0014 5524              clr R5
+ 0016 2416              cp R2,R20
+ 0018 3506              cpc R3,R21
+ 001A 4606              cpc R4,R22
+ 001C 5706              cpc R5,R23
+ 001E 7CF0              brlt L5
+ 0020 43E3              ldi R20,51
+ 0022 53E0              ldi R21,3
+ 0024 60E0              ldi R22,0
+ 0026 70E0              ldi R23,0
+ 0028 20900200          lds R2,_wAdValue+2
+ 002C 30900300          lds R3,_wAdValue+2+1
+ 0030 4424              clr R4
+ 0032 5524              clr R5
+ 0034 2416              cp R2,R20
+ 0036 3506              cpc R3,R21
+ 0038 4606              cpc R4,R22
+ 003A 5706              cpc R5,R23
+ 003C 14F4              brge L2
+ 003E           L5:
+ 003E                   .dbline 100
+ 003E           ;                                                                         return 1;
+ 003E 01E0              ldi R16,1
+ 0040 01C0              rjmp L1
+ 0042           L2:
+ 0042                   .dbline 102
+ 0042           ;                         else
+ 0042           ;                                                                         return 0;
+ 0042 0027              clr R16
+ 0044                   .dbline -2
+ 0044           L1:
+ 0044 00D0              rcall pop_gset2
+ 0046                   .dbline 0 ; func end
+ 0046 0895              ret
+ 0048                   .dbend
+ 0048                   .dbfunc e IsUnderWater _IsUnderWater fc
+                        .even
+ 0048           _IsUnderWater::
+ 0048 00D0              rcall push_gset2
+ 004A                   .dbline -1
+ 004A                   .dbline 123
+ 004A           ; #endif
+ 004A           ; 
+ 004A           ; #if 0
+ 004A           ;                                 if ( (wAdValue[0] < IN_HIGH_WATER_LIMIT_AD ) )
+ 004A           ;                                                                         return 1;
+ 004A           ;                         else
+ 004A           ;                                                                         return 0;
+ 004A           ; #endif
+ 004A           ; 
+ 004A           ; }
+ 004A           ; 
+ 004A           ; 
+ 004A           ; //---------------------
+ 004A           ; // IsUnderWater
+ 004A           ; // return: 0 -: no
+ 004A           ; //         1 -: yes
+ 004A           ; //         2 -: error
+ 004A           ; //---------------------
+ 004A           ; 
+ 004A           ; byte
+ 004A           ; IsUnderWater(void){
+ 004A                   .dbline 125
+ 004A           ; #if 1
+ 004A           ;                                 if ( (wAdValue[2] > IN_LOW_WATER_LIMIT_AD ) || ( wAdValue[3] > IN_LOW_WATER_LIMIT_AD) )
+ 004A 43E3              ldi R20,51
+ 004C 53E0              ldi R21,3
+ 004E 60E0              ldi R22,0
+ 0050 70E0              ldi R23,0
+ 0052 20900400          lds R2,_wAdValue+4
+ 0056 30900500          lds R3,_wAdValue+4+1
+ 005A 4424              clr R4
+ 005C 5524              clr R5
+ 005E 4215              cp R20,R2
+ 0060 5305              cpc R21,R3
+ 0062 6405              cpc R22,R4
+ 0064 7505              cpc R23,R5
+ 0066 7CF0              brlt L11
+ 0068 43E3              ldi R20,51
+ 006A 53E0              ldi R21,3
+ 006C 60E0              ldi R22,0
+ 006E 70E0              ldi R23,0
+ 0070 20900600          lds R2,_wAdValue+6
+ 0074 30900700          lds R3,_wAdValue+6+1
+ 0078 4424              clr R4
+ 007A 5524              clr R5
+ 007C 4215              cp R20,R2
+ 007E 5305              cpc R21,R3
+ 0080 6405              cpc R22,R4
+ 0082 7505              cpc R23,R5
+ 0084 14F4              brge L7
+ 0086           L11:
+ 0086                   .dbline 126
+ 0086           ;                                                                         return 1;
+ 0086 01E0              ldi R16,1
+ 0088 01C0              rjmp L6
+ 008A           L7:
+ 008A                   .dbline 128
+ 008A           ;                                 else
+ 008A           ;                                                                         return 0;
+ 008A 0027              clr R16
+ 008C                   .dbline -2
+ 008C           L6:
+ 008C 00D0              rcall pop_gset2
+ 008E                   .dbline 0 ; func end
+ 008E 0895              ret
+ 0090                   .dbend
+ 0090                   .dbfunc e IsHotWaterFull _IsHotWaterFull fc
+                        .even
+ 0090           _IsHotWaterFull::
+ 0090 00D0              rcall push_gset2
+ 0092                   .dbline -1
+ 0092                   .dbline 150
+ 0092           ; 
+ 0092           ; #endif
+ 0092           ; 
+ 0092           ; 
+ 0092           ; #if 0
+ 0092           ;                                 if ( (wAdValue[2] > IN_LOW_WATER_LIMIT_AD ) )
+ 0092           ;                                                                         return 1;
+ 0092           ;                                 else
+ 0092           ;                                                                         return 0;
+ 0092           ; 
+ 0092           ; #endif
+ 0092           ; 
+ 0092           ; }
+ 0092           ; 
+ 0092           ; //---------------------
+ 0092           ; // IsWaterOut
+ 0092           ; // return: 0 -: no
+ 0092           ; //         1 -: yes
+ 0092           ; //---------------------
+ 0092           ; 
+ 0092           ; byte
+ 0092           ; IsHotWaterFull(void){
+ 0092                   .dbline 153
+ 0092           ;       
+ 0092           ;                                        
+ 0092           ;                                 if ( wAdValue[4] < IN_LOW_WATER_LIMIT_AD )
+ 0092 43E3              ldi R20,51
+ 0094 53E0              ldi R21,3
+ 0096 60E0              ldi R22,0
+ 0098 70E0              ldi R23,0
+ 009A 20900800          lds R2,_wAdValue+8
+ 009E 30900900          lds R3,_wAdValue+8+1
+ 00A2 4424              clr R4
+ 00A4 5524              clr R5
+ 00A6 2416              cp R2,R20
+ 00A8 3506              cpc R3,R21
+ 00AA 4606              cpc R4,R22
+ 00AC 5706              cpc R5,R23
+ 00AE 14F4              brge L13
+ 00B0                   .dbline 154
+ 00B0           ;                                                                         return 1;
+ 00B0 01E0              ldi R16,1
+ 00B2 01C0              rjmp L12
+ 00B4           L13:
+ 00B4                   .dbline 156
+ 00B4           ;                   else
+ 00B4           ;                                                                         return 0;
+ 00B4 0027              clr R16
+ 00B6                   .dbline -2
+ 00B6           L12:
+ 00B6 00D0              rcall pop_gset2
+ 00B8                   .dbline 0 ; func end
+ 00B8 0895              ret
+ 00BA                   .dbend
+ 00BA                   .dbfunc e GetRlyAddWaterSts _GetRlyAddWaterSts fc
+                        .even
+ 00BA           _GetRlyAddWaterSts::
+ 00BA                   .dbline -1
+ 00BA                   .dbline 163
+ 00BA           ;                                                                                         
+ 00BA           ; }
+ 00BA           ; //---------------------
+ 00BA           ; // GetRlyAddWaterSts
+ 00BA           ; //---------------------
+ 00BA           ; byte 
+ 00BA           ; GetRlyAddWaterSts(void){
+ 00BA                   .dbline 164
+ 00BA           ;  return ((PORTB & BIT0) >> 0);
+ 00BA 08B3              in R16,0x18
+ 00BC 0170              andi R16,1
+ 00BE                   .dbline -2
+ 00BE           L16:
+ 00BE                   .dbline 0 ; func end
+ 00BE 0895              ret
+ 00C0                   .dbend
+ 00C0                   .dbfunc e SetRlyAddWater _SetRlyAddWater fV
+ 00C0           ;              c -> R20
+                        .even
+ 00C0           _SetRlyAddWater::
+ 00C0 00D0              rcall push_gset1
+ 00C2 402F              mov R20,R16
+ 00C4                   .dbline -1
+ 00C4                   .dbline 176
+ 00C4           ; 
+ 00C4           ; }
+ 00C4           ; 
+ 00C4           ; //---------------------
+ 00C4           ; // SetRlyAddWater
+ 00C4           ; // input: 1 -: contact
+ 00C4           ; //        0 -: contactless
+ 00C4           ; //---------------------
+ 00C4           ; //word wHotWaterCnt = 0;
+ 00C4           ; //word wAddWaterCnt = 0;
+ 00C4           ; void
+ 00C4           ; SetRlyAddWater(byte c){
+ 00C4                   .dbline 177
+ 00C4           ;       if (c)
+ 00C4 4423              tst R20
+ 00C6 59F0              breq L18
+ 00C8                   .dbline 178
+ 00C8           ;       {
+ 00C8                   .dbline 179
+ 00C8           ;           if (GetRlyAddWaterSts() == 0)
+ 00C8 F8DF              rcall _GetRlyAddWaterSts
+ 00CA 0023              tst R16
+ 00CC 31F4              brne L20
+ 00CE                   .dbline 180
+ 00CE           ;                  wAddWaterCnt = 1;
+ 00CE 81E0              ldi R24,1
+ 00D0 90E0              ldi R25,0
+ 00D2 90930400          sts _wAddWaterCnt+1,R25
+ 00D6 80930300          sts _wAddWaterCnt,R24
+ 00DA           L20:
+ 00DA                   .dbline 182
+ 00DA           ;                        
+ 00DA           ;               PORTB |= BIT0;
+ 00DA C09A              sbi 0x18,0
+ 00DC                   .dbline 183
+ 00DC           ;       }
+ 00DC 07C0              rjmp L19
+ 00DE           L18:
+ 00DE                   .dbline 185
+ 00DE                   .dbline 186
+ 00DE 2224              clr R2
+ 00E0 3324              clr R3
+ 00E2 30920400          sts _wAddWaterCnt+1,R3
+ 00E6 20920300          sts _wAddWaterCnt,R2
+ 00EA                   .dbline 187
+ 00EA C098              cbi 0x18,0
+ 00EC                   .dbline 189
+ 00EC           L19:
+ 00EC                   .dbline -2
+ 00EC           L17:
+ 00EC 00D0              rcall pop_gset1
+ 00EE                   .dbline 0 ; func end
+ 00EE 0895              ret
+ 00F0                   .dbsym r c 20 c
+ 00F0                   .dbend
+ 00F0                   .dbfunc e GetRlyAddHotSts _GetRlyAddHotSts fc
+                        .even
+ 00F0           _GetRlyAddHotSts::
+ 00F0                   .dbline -1
+ 00F0                   .dbline 197
+ 00F0           ;       else
+ 00F0           ;       {
+ 00F0           ;               wAddWaterCnt = 0;
+ 00F0           ;               PORTB &= ~BIT0;
+ 00F0           ;               
+ 00F0           ;       }
+ 00F0           ; }
+ 00F0           ; 
+ 00F0           ; 
+ 00F0           ; //---------------------
+ 00F0           ; // GetRlyAddHotSts
+ 00F0           ; //---------------------
+ 00F0           ; byte 
+ 00F0           ; GetRlyAddHotSts(void){
+ 00F0                   .dbline 198
+ 00F0           ;  return ((PORTB & BIT1) >> 1);
+ 00F0 08B3              in R16,0x18
+ 00F2 0270              andi R16,2
+ 00F4 0695              lsr R16
+ 00F6                   .dbline -2
+ 00F6           L22:
+ 00F6                   .dbline 0 ; func end
+ 00F6 0895              ret
+ 00F8                   .dbend
+ 00F8                   .dbfunc e SetRlyAddHot _SetRlyAddHot fV
+ 00F8           ;              c -> R20
+                        .even
+ 00F8           _SetRlyAddHot::
+ 00F8 00D0              rcall push_gset1
+ 00FA 402F              mov R20,R16
+ 00FC                   .dbline -1
+ 00FC                   .dbline 207
+ 00FC           ; 
+ 00FC           ; }
+ 00FC           ; //---------------------
+ 00FC           ; // SetRlyAddHot
+ 00FC           ; // input: 1 -: contact
+ 00FC           ; //        0 -: contactless
+ 00FC           ; //---------------------
+ 00FC           ; void
+ 00FC           ; SetRlyAddHot(byte c){
+ 00FC                   .dbline 208
+ 00FC           ;       if (c)
+ 00FC 4423              tst R20
+ 00FE 59F0              breq L24
+ 0100                   .dbline 209
+ 0100           ;       {
+ 0100                   .dbline 210
+ 0100           ;          if (GetRlyAddHotSts() == 0)
+ 0100 F7DF              rcall _GetRlyAddHotSts
+ 0102 0023              tst R16
+ 0104 31F4              brne L26
+ 0106                   .dbline 211
+ 0106           ;                 wHotWaterCnt = 1;
+ 0106 81E0              ldi R24,1
+ 0108 90E0              ldi R25,0
+ 010A 90930200          sts _wHotWaterCnt+1,R25
+ 010E 80930100          sts _wHotWaterCnt,R24
+ 0112           L26:
+ 0112                   .dbline 212
+ 0112           ;               PORTB |= BIT1;
+ 0112 C19A              sbi 0x18,1
+ 0114                   .dbline 213
+ 0114           ;       }
+ 0114 07C0              rjmp L25
+ 0116           L24:
+ 0116                   .dbline 215
+ 0116                   .dbline 216
+ 0116 2224              clr R2
+ 0118 3324              clr R3
+ 011A 30920200          sts _wHotWaterCnt+1,R3
+ 011E 20920100          sts _wHotWaterCnt,R2
+ 0122                   .dbline 217
+ 0122 C198              cbi 0x18,1
+ 0124                   .dbline 218
+ 0124           L25:
+ 0124                   .dbline -2
+ 0124           L23:
+ 0124 00D0              rcall pop_gset1
+ 0126                   .dbline 0 ; func end
+ 0126 0895              ret
+ 0128                   .dbsym r c 20 c
+ 0128                   .dbend
+ 0128                   .dbfunc e SetLedPwr _SetLedPwr fV
+ 0128           ;              c -> R16
+                        .even
+ 0128           _SetLedPwr::
+ 0128                   .dbline -1
+ 0128                   .dbline 229
+ 0128           ;       else
+ 0128           ;       {
+ 0128           ;                 wHotWaterCnt = 0;     
+ 0128           ;               PORTB &= ~BIT1;
+ 0128           ;       }       
+ 0128           ; }
+ 0128           ; 
+ 0128           ; 
+ 0128           ; //---------------------
+ 0128           ; // SetLedPwr
+ 0128           ; // input: 1 -: on
+ 0128           ; //        0 -: off
+ 0128           ; //---------------------
+ 0128           ; 
+ 0128           ; void
+ 0128           ; SetLedPwr(byte c){
+ 0128                   .dbline 230
+ 0128           ;       if (c)
+ 0128 0023              tst R16
+ 012A 11F0              breq L29
+ 012C                   .dbline 231
+ 012C           ;               PORTB |= BIT2;
+ 012C C29A              sbi 0x18,2
+ 012E 01C0              rjmp L30
+ 0130           L29:
+ 0130                   .dbline 233
+ 0130 C298              cbi 0x18,2
+ 0132           L30:
+ 0132                   .dbline -2
+ 0132           L28:
+ 0132                   .dbline 0 ; func end
+ 0132 0895              ret
+ 0134                   .dbsym r c 16 c
+ 0134                   .dbend
+ 0134                   .dbfunc e SetLedLwt _SetLedLwt fV
+ 0134           ;              c -> R16
+                        .even
+ 0134           _SetLedLwt::
+ 0134                   .dbline -1
+ 0134                   .dbline 242
+ 0134           ;       else
+ 0134           ;               PORTB &= ~BIT2;
+ 0134           ; }
+ 0134           ; 
+ 0134           ; //---------------------
+ 0134           ; // SetLedLwt
+ 0134           ; // input: 1 -: on
+ 0134           ; //        0 -: off
+ 0134           ; //---------------------
+ 0134           ; void
+ 0134           ; SetLedLwt(byte c){
+ 0134                   .dbline 243
+ 0134           ;       if (c)
+ 0134 0023              tst R16
+ 0136 11F0              breq L32
+ 0138                   .dbline 244
+ 0138           ;               PORTB |= BIT3;
+ 0138 C39A              sbi 0x18,3
+ 013A 01C0              rjmp L33
+ 013C           L32:
+ 013C                   .dbline 246
+ 013C C398              cbi 0x18,3
+ 013E           L33:
+ 013E                   .dbline -2
+ 013E           L31:
+ 013E                   .dbline 0 ; func end
+ 013E 0895              ret
+ 0140                   .dbsym r c 16 c
+ 0140                   .dbend
+ 0140                   .dbfunc e SetLedRun _SetLedRun fV
+ 0140           ;              c -> R16
+                        .even
+ 0140           _SetLedRun::
+ 0140                   .dbline -1
+ 0140                   .dbline 255
+ 0140           ;       else
+ 0140           ;               PORTB &= ~BIT3;
+ 0140           ; }
+ 0140           ; 
+ 0140           ; //---------------------
+ 0140           ; // SetLedRun
+ 0140           ; // input: 1 -: on
+ 0140           ; //        0 -: off
+ 0140           ; //---------------------
+ 0140           ; void
+ 0140           ; SetLedRun(byte c){
+ 0140                   .dbline 256
+ 0140           ;       if (c)
+ 0140 0023              tst R16
+ 0142 11F0              breq L35
+ 0144                   .dbline 257
+ 0144           ;               PORTB |= BIT4;
+ 0144 C49A              sbi 0x18,4
+ 0146 01C0              rjmp L36
+ 0148           L35:
+ 0148                   .dbline 259
+ 0148 C498              cbi 0x18,4
+ 014A           L36:
+ 014A                   .dbline -2
+ 014A           L34:
+ 014A                   .dbline 0 ; func end
+ 014A 0895              ret
+ 014C                   .dbsym r c 16 c
+ 014C                   .dbend
+ 014C                   .dbfunc e SetLedErr _SetLedErr fV
+ 014C           ;              c -> R16
+                        .even
+ 014C           _SetLedErr::
+ 014C                   .dbline -1
+ 014C                   .dbline 269
+ 014C           ;       else
+ 014C           ;               PORTB &= ~BIT4;
+ 014C           ; }
+ 014C           ; 
+ 014C           ; 
+ 014C           ; //---------------------
+ 014C           ; // SetLedErr
+ 014C           ; // input: 1 -: on
+ 014C           ; //        0 -: off
+ 014C           ; //---------------------
+ 014C           ; void
+ 014C           ; SetLedErr(byte c){
+ 014C                   .dbline 270
+ 014C           ;       if (c)
+ 014C 0023              tst R16
+ 014E 11F0              breq L38
+ 0150                   .dbline 271
+ 0150           ;               PORTB |= BIT5;
+ 0150 C59A              sbi 0x18,5
+ 0152 01C0              rjmp L39
+ 0154           L38:
+ 0154                   .dbline 273
+ 0154 C598              cbi 0x18,5
+ 0156           L39:
+ 0156                   .dbline -2
+ 0156           L37:
+ 0156                   .dbline 0 ; func end
+ 0156 0895              ret
+ 0158                   .dbsym r c 16 c
+ 0158                   .dbend
+ 0158                   .dbfunc e SetSpk _SetSpk fV
+ 0158           ;           dly2 -> <dead>
+ 0158           ;           dly1 -> <dead>
+ 0158           ;              c -> R16
+                        .even
+ 0158           _SetSpk::
+ 0158                   .dbline -1
+ 0158                   .dbline 283
+ 0158           ;       else
+ 0158           ;               PORTB &= ~BIT5;
+ 0158           ; }
+ 0158           ; 
+ 0158           ; //---------------------
+ 0158           ; // SetSpk
+ 0158           ; // input: 1 -: on
+ 0158           ; //        0 -: off
+ 0158           ; //---------------------
+ 0158           ; extern byte bTaskFlag;
+ 0158           ; void
+ 0158           ; SetSpk(byte c){
+ 0158                   .dbline 286
+ 0158           ; byte dly1;
+ 0158           ; word dly2;
+ 0158           ;       if (c)
+ 0158 0023              tst R16
+ 015A 39F0              breq L41
+ 015C                   .dbline 287
+ 015C           ;       {
+ 015C                   .dbline 288
+ 015C           ;               PORTD |= BIT7;
+ 015C 979A              sbi 0x12,7
+ 015E                   .dbline 289
+ 015E           ;               bTaskFlag |= BIT_SPK;     
+ 015E 80910000          lds R24,_bTaskFlag
+ 0162 8061              ori R24,16
+ 0164 80930000          sts _bTaskFlag,R24
+ 0168                   .dbline 290
+ 0168           ;       }
+ 0168 06C0              rjmp L42
+ 016A           L41:
+ 016A                   .dbline 292
+ 016A                   .dbline 293
+ 016A 9798              cbi 0x12,7
+ 016C                   .dbline 294
+ 016C 80910000          lds R24,_bTaskFlag
+ 0170 8F7E              andi R24,239
+ 0172 80930000          sts _bTaskFlag,R24
+ 0176                   .dbline 295
+ 0176           L42:
+ 0176                   .dbline -2
+ 0176           L40:
+ 0176                   .dbline 0 ; func end
+ 0176 0895              ret
+ 0178                   .dbsym l dly2 1 s
+ 0178                   .dbsym l dly1 1 c
+ 0178                   .dbsym r c 16 c
+ 0178                   .dbend
+ 0178                   .dbfunc e SetAllOff _SetAllOff fV
+                        .even
+ 0178           _SetAllOff::
+ 0178                   .dbline -1
+ 0178                   .dbline 304
+ 0178           ;       else
+ 0178           ;       {
+ 0178           ;               PORTD &= ~BIT7;
+ 0178           ;               bTaskFlag &= ~BIT_SPK;    
+ 0178           ;       }
+ 0178           ;               
+ 0178           ; }
+ 0178           ; 
+ 0178           ; 
+ 0178           ; //---------------------
+ 0178           ; // SetAllOff
+ 0178           ; //---------------------
+ 0178           ; void
+ 0178           ; SetAllOff(void){
+ 0178                   .dbline 305
+ 0178           ;       SetSpk(0);
+ 0178 0027              clr R16
+ 017A EEDF              rcall _SetSpk
+ 017C                   .dbline 307
+ 017C           ;       //PORTB &= ~(BIT0+BIT1+BIT2+BIT3+BIT4+BIT5);
+ 017C           ;       SetRlyAddWater(0);
+ 017C 0027              clr R16
+ 017E A0DF              rcall _SetRlyAddWater
+ 0180                   .dbline 308
+ 0180           ;       SetRlyAddHot(0);
+ 0180 0027              clr R16
+ 0182 BADF              rcall _SetRlyAddHot
+ 0184                   .dbline 309
+ 0184           ;       SetLedPwr(0);
+ 0184 0027              clr R16
+ 0186 D0DF              rcall _SetLedPwr
+ 0188                   .dbline 310
+ 0188           ;       SetLedLwt(0);
+ 0188 0027              clr R16
+ 018A D4DF              rcall _SetLedLwt
+ 018C                   .dbline 311
+ 018C           ;       SetLedRun(0);
+ 018C 0027              clr R16
+ 018E D8DF              rcall _SetLedRun
+ 0190                   .dbline 312
+ 0190           ;       SetLedErr(0);
+ 0190 0027              clr R16
+ 0192 DCDF              rcall _SetLedErr
+ 0194                   .dbline -2
+ 0194           L43:
+ 0194                   .dbline 0 ; func end
+ 0194 0895              ret
+ 0196                   .dbend
+ 0196                   .dbfunc e TurnOnAdPwr _TurnOnAdPwr fV
+                        .even
+ 0196           _TurnOnAdPwr::
+ 0196                   .dbline -1
+ 0196                   .dbline 319
+ 0196           ; 
+ 0196           ; }
+ 0196           ; //---------------------
+ 0196           ; // TurnOnAdPwr
+ 0196           ; //---------------------
+ 0196           ; void 
+ 0196           ; TurnOnAdPwr(void){
+ 0196                   .dbline 320
+ 0196           ;       PORTD |= BIT3 + BIT4;
+ 0196 82B3              in R24,0x12
+ 0198 8861              ori R24,24
+ 019A 82BB              out 0x12,R24
+ 019C                   .dbline -2
+ 019C           L44:
+ 019C                   .dbline 0 ; func end
+ 019C 0895              ret
+ 019E                   .dbend
+ 019E                   .dbfunc e TurnOffAdPwr _TurnOffAdPwr fV
+                        .even
+ 019E           _TurnOffAdPwr::
+ 019E                   .dbline -1
+ 019E                   .dbline 327
+ 019E           ; 
+ 019E           ; }
+ 019E           ; //---------------------
+ 019E           ; // TurnOffAdPwr
+ 019E           ; //---------------------
+ 019E           ; void 
+ 019E           ; TurnOffAdPwr(void){
+ 019E                   .dbline 329
+ 019E           ; 
+ 019E           ;       PORTD &= ~(BIT3 + BIT4);
+ 019E 82B3              in R24,0x12
+ 01A0 877E              andi R24,231
+ 01A2 82BB              out 0x12,R24
+ 01A4                   .dbline -2
+ 01A4           L45:
+ 01A4                   .dbline 0 ; func end
+ 01A4 0895              ret
+ 01A6                   .dbend
+ 01A6                   .dbfunc e GetOnoffKeyPin _GetOnoffKeyPin fc
+                        .even
+ 01A6           _GetOnoffKeyPin::
+ 01A6                   .dbline -1
+ 01A6                   .dbline 339
+ 01A6           ; }
+ 01A6           ; 
+ 01A6           ; //---------------------
+ 01A6           ; // GetOnoffKeyPin
+ 01A6           ; // output: 1 -: no pressing key
+ 01A6           ; //         0 -: pressing key
+ 01A6           ; //---------------------
+ 01A6           ; 
+ 01A6           ; byte 
+ 01A6           ; GetOnoffKeyPin(void){
+ 01A6                   .dbline 340
+ 01A6           ;   return ((PIND & BIT2) >> 2);
+ 01A6 00B3              in R16,0x10
+ 01A8 0470              andi R16,4
+ 01AA 0695              lsr R16
+ 01AC 0695              lsr R16
+ 01AE                   .dbline -2
+ 01AE           L46:
+ 01AE                   .dbline 0 ; func end
+ 01AE 0895              ret
+ 01B0                   .dbend
+ 01B0                   .dbfunc e SetErrState _SetErrState fV
+                        .even
+ 01B0           _SetErrState::
+ 01B0                   .dbline -1
+ 01B0                   .dbline 344
+ 01B0           ; }
+ 01B0           ; 
+ 01B0           ; void
+ 01B0           ; SetErrState(void){
+ 01B0                   .dbline 345
+ 01B0           ;                 bDrsStatus = 2;
+ 01B0 82E0              ldi R24,2
+ 01B2 80930000          sts _bDrsStatus,R24
+ 01B6                   .dbline 347
+ 01B6           ;                 
+ 01B6           ;                 DoErr();
+ 01B6 01D0              rcall _DoErr
+ 01B8                   .dbline -2
+ 01B8           L47:
+ 01B8                   .dbline 0 ; func end
+ 01B8 0895              ret
+ 01BA                   .dbend
+ 01BA                   .dbfunc e DoErr _DoErr fV
+                        .even
+ 01BA           _DoErr::
+ 01BA                   .dbline -1
+ 01BA                   .dbline 355
+ 01BA           ; }
+ 01BA           ; 
+ 01BA           ; //---------------------
+ 01BA           ; // DoErr
+ 01BA           ; // 
+ 01BA           ; //---------------------
+ 01BA           ; void   
+ 01BA           ; DoErr(void){
+ 01BA                   .dbline 357
+ 01BA           ;          
+ 01BA           ;          if (wErrAlarmCnt == 0)
+ 01BA 20900500          lds R2,_wErrAlarmCnt
+ 01BE 30900600          lds R3,_wErrAlarmCnt+1
+ 01C2 2220              tst R2
+ 01C4 41F4              brne L49
+ 01C6 3320              tst R3
+ 01C8 31F4              brne L49
+ 01CA           X0:
+ 01CA                   .dbline 358
+ 01CA           ;              wErrAlarmCnt = 1;
+ 01CA 81E0              ldi R24,1
+ 01CC 90E0              ldi R25,0
+ 01CE 90930600          sts _wErrAlarmCnt+1,R25
+ 01D2 80930500          sts _wErrAlarmCnt,R24
+ 01D6           L49:
+ 01D6                   .dbline 360
+ 01D6           ;          
+ 01D6           ;          SetRlyAddWater(0);
+ 01D6 0027              clr R16
+ 01D8 73DF              rcall _SetRlyAddWater
+ 01DA                   .dbline 361
+ 01DA           ;          SetRlyAddHot(0);
+ 01DA 0027              clr R16
+ 01DC 8DDF              rcall _SetRlyAddHot
+ 01DE                   .dbline 363
+ 01DE           ;          
+ 01DE           ;          TurnOffAdPwr();   
+ 01DE DFDF              rcall _TurnOffAdPwr
+ 01E0                   .dbline 364
+ 01E0           ;          SetLedPwr(1);
+ 01E0 01E0              ldi R16,1
+ 01E2 A2DF              rcall _SetLedPwr
+ 01E4                   .dbline 365
+ 01E4           ;          SetLedLwt(0);
+ 01E4 0027              clr R16
+ 01E6 A6DF              rcall _SetLedLwt
+ 01E8                   .dbline 366
+ 01E8           ;          SetLedRun(0);
+ 01E8 0027              clr R16
+ 01EA AADF              rcall _SetLedRun
+ 01EC                   .dbline 367
+ 01EC           ;          SetLedErr(1);
+ 01EC 01E0              ldi R16,1
+ 01EE AEDF              rcall _SetLedErr
+ 01F0                   .dbline 368
+ 01F0           ;          SetSpk(1);
+ 01F0 01E0              ldi R16,1
+ 01F2 B2DF              rcall _SetSpk
+ 01F4                   .dbline -2
+ 01F4           L48:
+ 01F4                   .dbline 0 ; func end
+ 01F4 0895              ret
+ 01F6                   .dbend
+                        .area bss(ram, con, rel)
+ 0000                   .dbfile C:\DOCUME~1\awang\Desktop\Aixi_个人\myCNC\sCNC\fw\v0.01\drs.c
+ 0000           _wAdValue::
+ 0000                   .blkb 12
+ 000C                   .dbsym e wAdValue _wAdValue A[12:6]s

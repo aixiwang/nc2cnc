@@ -1,0 +1,401 @@
+                        .module serial.c
+                        .area text(rom, con, rel)
+ 0000                   .dbfile C:\DOCUME~1\awang\Desktop\Aixi_¸öÈË\myCNC\sCNC\fw\v0.01\serial.c
+ 0000                   .dbfunc e init_serial _init_serial fV
+                        .even
+ 0000           _init_serial::
+ 0000                   .dbline -1
+ 0000                   .dbline 19
+ 0000           ; ////////////////////////////////////////////////////////////////////////////////
+ 0000           ; // SERIAL
+ 0000           ; // Copyright(c) 2006 by Aixi.Wang, All rights reserved.
+ 0000           ; // V1.00 -- 02/01/2007
+ 0000           ; 
+ 0000           ; ////////////////////////////////////////////////////////////////////////////////
+ 0000           ; #include <iom8v.h>
+ 0000           ; #include <macros.h>
+ 0000           ; 
+ 0000           ; #include "typedef.h"
+ 0000           ; #include "serial.h"
+ 0000           ; #include "main.h"
+ 0000           ; 
+ 0000           ; 
+ 0000           ; //-----------------
+ 0000           ; // init_serial
+ 0000           ; //-----------------
+ 0000           ; void
+ 0000           ; init_serial(void){
+ 0000                   .dbline -2
+ 0000           L1:
+ 0000                   .dbline 0 ; func end
+ 0000 0895              ret
+ 0002                   .dbend
+ 0002                   .dbfunc e wait_us _wait_us fV
+ 0002           ;          delay -> R0,R1
+                        .even
+ 0002           _wait_us::
+ 0002                   .dbline -1
+ 0002                   .dbline 29
+ 0002           ; 
+ 0002           ; 
+ 0002           ; }
+ 0002           ; 
+ 0002           ; 
+ 0002           ; //-----------------
+ 0002           ; // wait_us
+ 0002           ; //-----------------
+ 0002           ; void wait_us(unsigned short delay)
+ 0002           ; {
+ 0002                   .dbline -2
+ 0002           L2:
+ 0002                   .dbline 0 ; func end
+ 0002 0895              ret
+ 0004                   .dbsym l delay 0 s
+ 0004                   .dbend
+ 0004                   .dbfunc e uart_tx _uart_tx fV
+ 0004           ;              i -> R20,R21
+ 0004           ;              c -> R16
+                        .even
+ 0004           _uart_tx::
+ 0004 00D0              rcall push_gset1
+ 0006                   .dbline -1
+ 0006                   .dbline 111
+ 0006           ; 
+ 0006           ; 
+ 0006           ; }
+ 0006           ; 
+ 0006           ; 
+ 0006           ; #if 0         // remove the fifo code
+ 0006           ; //------------------------------------
+ 0006           ; // fifo_input
+ 0006           ; //------------------------------------
+ 0006           ; 
+ 0006           ; byte
+ 0006           ; fifo_input(byte c){
+ 0006           ;       ps2_data_buf[ps2_data_head] = c;
+ 0006           ;       ps2_data_head++;
+ 0006           ;       if (ps2_data_head>=32)
+ 0006           ;       {
+ 0006           ;               ps2_data_head = 0;
+ 0006           ;               return 0;
+ 0006           ;       }
+ 0006           ;       else
+ 0006           ;               return 1;
+ 0006           ; }
+ 0006           ; 
+ 0006           ; //------------------------------------
+ 0006           ; // fifo_output
+ 0006           ; //------------------------------------
+ 0006           ; byte                  
+ 0006           ; fifo_output(byte* p){
+ 0006           ;       if (ps2_data_head == ps2_data_tail)
+ 0006           ;                       return 0;
+ 0006           ; 
+ 0006           ;               *p = ps2_data_buf[ps2_data_tail];
+ 0006           ;               ps2_data_tail++;
+ 0006           ;               if (ps2_data_tail>=32)  
+ 0006           ;                       ps2_data_tail = 0;
+ 0006           ;       
+ 0006           ;       return 1;
+ 0006           ; 
+ 0006           ; }
+ 0006           ; 
+ 0006           ; //------------------------------------
+ 0006           ; // ps2_out_fifo_input
+ 0006           ; //------------------------------------
+ 0006           ; byte
+ 0006           ; ps2_out_fifo_input(byte c){
+ 0006           ;       ps2_out_buf[ps2_out_head] = c;
+ 0006           ;       ps2_out_head++;
+ 0006           ;       if (ps2_out_head>=32)
+ 0006           ;       {
+ 0006           ;               ps2_out_head = 0;
+ 0006           ;               return 0;
+ 0006           ;       }
+ 0006           ;       else
+ 0006           ;               return 1;
+ 0006           ; }
+ 0006           ; 
+ 0006           ; //------------------------------------
+ 0006           ; // ps2_out_fifo_output
+ 0006           ; //------------------------------------
+ 0006           ; byte                  
+ 0006           ; ps2_out_fifo_output(byte* p){
+ 0006           ;       if (ps2_out_head == ps2_out_tail)
+ 0006           ;                       return 0;
+ 0006           ; 
+ 0006           ;               *p = ps2_out_buf[ps2_out_tail];
+ 0006           ;               ps2_out_tail++;
+ 0006           ;               if (ps2_out_tail>=32)   
+ 0006           ;                       ps2_out_tail = 0;
+ 0006           ;       
+ 0006           ;       return 1;
+ 0006           ; 
+ 0006           ; }
+ 0006           ; 
+ 0006           ; #endif
+ 0006           ; 
+ 0006           ; 
+ 0006           ; 
+ 0006           ; //------------------
+ 0006           ; // uart_tx
+ 0006           ; //------------------
+ 0006           ; void 
+ 0006           ; uart_tx(byte c){
+ 0006                   .dbline 114
+ 0006           ; 
+ 0006           ;  word i;
+ 0006           ;  UDR = c;
+ 0006 0CB9              out 0xc,R16
+ 0008                   .dbline 115
+ 0008 4427              clr R20
+ 000A 5527              clr R21
+ 000C 02C0              rjmp L7
+ 000E           L4:
+ 000E                   .dbline 115
+ 000E                   .dbline 115
+ 000E           L5:
+ 000E                   .dbline 115
+ 000E 4F5F              subi R20,255  ; offset = 1
+ 0010 5F4F              sbci R21,255
+ 0012           L7:
+ 0012                   .dbline 115
+ 0012           ;  for(i=0; i<200; i++){};
+ 0012 483C              cpi R20,200
+ 0014 E0E0              ldi R30,0
+ 0016 5E07              cpc R21,R30
+ 0018 D0F3              brlo L4
+ 001A                   .dbline 115
+ 001A                   .dbline -2
+ 001A           L3:
+ 001A 00D0              rcall pop_gset1
+ 001C                   .dbline 0 ; func end
+ 001C 0895              ret
+ 001E                   .dbsym r i 20 s
+ 001E                   .dbsym r c 16 c
+ 001E                   .dbend
+ 001E                   .dbfunc e uart_rx _uart_rx fc
+                        .even
+ 001E           _uart_rx::
+ 001E                   .dbline -1
+ 001E                   .dbline 125
+ 001E           ; 
+ 001E           ; 
+ 001E           ; }
+ 001E           ; 
+ 001E           ; 
+ 001E           ; //------------------
+ 001E           ; // uart_rx
+ 001E           ; //------------------
+ 001E           ; byte 
+ 001E           ; uart_rx(void){
+ 001E                   .dbline 127
+ 001E           ; 
+ 001E           ;         return 0;
+ 001E 0027              clr R16
+ 0020                   .dbline -2
+ 0020           L8:
+ 0020                   .dbline 0 ; func end
+ 0020 0895              ret
+ 0022                   .dbend
+ 0022                   .dbfunc e hex_to_bin _hex_to_bin fc
+ 0022           ;         result -> R20
+ 0022           ;          value -> R16
+                        .even
+ 0022           _hex_to_bin::
+ 0022 00D0              rcall push_gset1
+ 0024                   .dbline -1
+ 0024                   .dbline 136
+ 0024           ;               
+ 0024           ; }
+ 0024           ; 
+ 0024           ; 
+ 0024           ; 
+ 0024           ; //--------------------------
+ 0024           ; // hex_to_bin
+ 0024           ; //--------------------------
+ 0024           ; unsigned char hex_to_bin( char value ) {
+ 0024                   .dbline 139
+ 0024           ; 
+ 0024           ;       unsigned char result;
+ 0024           ;       result =value - '0';
+ 0024 402F              mov R20,R16
+ 0026 4053              subi R20,48
+ 0028                   .dbline 140
+ 0028           ;       if ( result > 9 ) result -= ('A' - '9' - 1);
+ 0028 89E0              ldi R24,9
+ 002A 8417              cp R24,R20
+ 002C 08F4              brsh L10
+ 002E                   .dbline 140
+ 002E 4750              subi R20,7
+ 0030           L10:
+ 0030                   .dbline 142
+ 0030           ; 
+ 0030           ;       return( result );
+ 0030 042F              mov R16,R20
+ 0032                   .dbline -2
+ 0032           L9:
+ 0032 00D0              rcall pop_gset1
+ 0034                   .dbline 0 ; func end
+ 0034 0895              ret
+ 0036                   .dbsym r result 20 c
+ 0036                   .dbsym r value 16 c
+ 0036                   .dbend
+ 0036                   .dbfunc e hexit _hexit fc
+ 0036           ;         result -> R20
+ 0036           ;          value -> R16
+                        .even
+ 0036           _hexit::
+ 0036 00D0              rcall push_gset1
+ 0038                   .dbline -1
+ 0038                   .dbline 150
+ 0038           ; 
+ 0038           ; }
+ 0038           ; 
+ 0038           ; //--------------------------
+ 0038           ; // hexit
+ 0038           ; //--------------------------
+ 0038           ; 
+ 0038           ; char hexit( unsigned char value ){
+ 0038                   .dbline 153
+ 0038           ; 
+ 0038           ;       char result;
+ 0038           ;       result = value & 0x0F;
+ 0038 402F              mov R20,R16
+ 003A 4F70              andi R20,15
+ 003C                   .dbline 154
+ 003C           ;       result += '0';
+ 003C 405D              subi R20,208    ; addi 48
+ 003E                   .dbline 155
+ 003E           ;       if (result > '9') result += ('A' - '9' - 1);
+ 003E 89E3              ldi R24,57
+ 0040 8417              cp R24,R20
+ 0042 08F4              brsh L13
+ 0044                   .dbline 155
+ 0044 495F              subi R20,249    ; addi 7
+ 0046           L13:
+ 0046                   .dbline 157
+ 0046           ; 
+ 0046           ;       return( result );
+ 0046 042F              mov R16,R20
+ 0048                   .dbline -2
+ 0048           L12:
+ 0048 00D0              rcall pop_gset1
+ 004A                   .dbline 0 ; func end
+ 004A 0895              ret
+ 004C                   .dbsym r result 20 c
+ 004C                   .dbsym r value 16 c
+ 004C                   .dbend
+ 004C                   .dbfunc e uart_2hex _uart_2hex fV
+ 004C           ;          value -> R20
+                        .even
+ 004C           _uart_2hex::
+ 004C 00D0              rcall push_gset1
+ 004E 402F              mov R20,R16
+ 0050                   .dbline -1
+ 0050                   .dbline 165
+ 0050           ; 
+ 0050           ; }
+ 0050           ; 
+ 0050           ; 
+ 0050           ; //--------------------------
+ 0050           ; // uart_2hex
+ 0050           ; //--------------------------
+ 0050           ; void uart_2hex( unsigned char value ) {
+ 0050                   .dbline 167
+ 0050           ; 
+ 0050           ;       uart_tx( hexit( value >> 4 ) );
+ 0050 042F              mov R16,R20
+ 0052 0295              swap R16
+ 0054 0F70              andi R16,#0x0F
+ 0056 EFDF              rcall _hexit
+ 0058 D5DF              rcall _uart_tx
+ 005A                   .dbline 168
+ 005A           ;       uart_tx( hexit( value >> 0 ) );
+ 005A 042F              mov R16,R20
+ 005C ECDF              rcall _hexit
+ 005E D2DF              rcall _uart_tx
+ 0060                   .dbline -2
+ 0060           L15:
+ 0060 00D0              rcall pop_gset1
+ 0062                   .dbline 0 ; func end
+ 0062 0895              ret
+ 0064                   .dbsym r value 20 c
+ 0064                   .dbend
+ 0064                   .dbfunc e debug_led _debug_led fV
+                        .even
+ 0064           _debug_led::
+ 0064                   .dbline -1
+ 0064                   .dbline 206
+ 0064           ; 
+ 0064           ; }
+ 0064           ; 
+ 0064           ; 
+ 0064           ; #if 0
+ 0064           ; //--------------------------
+ 0064           ; // uart2_2hex
+ 0064           ; //--------------------------
+ 0064           ; void uart2_2hex( unsigned char value ) {
+ 0064           ; 
+ 0064           ; //    uart2_tx( hexit( value >> 4 ) );
+ 0064           ; //    uart2_tx( hexit( value >> 0 ) );
+ 0064           ; 
+ 0064           ; }
+ 0064           ; 
+ 0064           ; 
+ 0064           ; //--------------------------
+ 0064           ; // uart2_string
+ 0064           ; //--------------------------
+ 0064           ; void  uart2_string( char * pStr ) {
+ 0064           ;       while (*pStr) {
+ 0064           ; //            uart2_tx( *(pStr++) );
+ 0064           ;       }
+ 0064           ; }
+ 0064           ; 
+ 0064           ; 
+ 0064           ; //---------------
+ 0064           ; // uart_newline
+ 0064           ; //---------------
+ 0064           ; void uart2_newline( void ) {
+ 0064           ; //    uart2_tx(0x0a);
+ 0064           ; //    uart2_tx(0x0d);
+ 0064           ; }
+ 0064           ; #endif
+ 0064           ; 
+ 0064           ; 
+ 0064           ; void 
+ 0064           ; debug_led(void){
+ 0064                   .dbline 208
+ 0064           ;                               
+ 0064           ;       PORTD   ^= BIT5;
+ 0064 80E2              ldi R24,32
+ 0066 22B2              in R2,0x12
+ 0068 2826              eor R2,R24
+ 006A 22BA              out 0x12,R2
+ 006C                   .dbline -2
+ 006C           L16:
+ 006C                   .dbline 0 ; func end
+ 006C 0895              ret
+ 006E                   .dbend
+ 006E                   .dbfunc e put_dword _put_dword fV
+ 006E           ;             d1 -> y+2
+                        .even
+ 006E           _put_dword::
+ 006E                   .dbline -1
+ 006E                   .dbline 218
+ 006E           ; 
+ 006E           ; 
+ 006E           ; }
+ 006E           ; 
+ 006E           ; //------------------
+ 006E           ; // put_dword(
+ 006E           ; //------------------
+ 006E           ; 
+ 006E           ; void
+ 006E           ; put_dword(dword d1){
+ 006E                   .dbline -2
+ 006E           L17:
+ 006E                   .dbline 0 ; func end
+ 006E 0895              ret
+ 0070                   .dbsym l d1 0 l
+ 0070                   .dbend

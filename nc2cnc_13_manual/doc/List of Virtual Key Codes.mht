@@ -1,0 +1,1046 @@
+From: <ÓÉ Windows Internet Explorer 7 ±£´æ>
+Subject: List of Virtual Key Codes
+Date: Sun, 5 Jul 2009 20:32:40 +0800
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	type="text/html";
+	boundary="----=_NextPart_000_0000_01C9FDAF.BE29BBC0"
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2900.3350
+
+This is a multi-part message in MIME format.
+
+------=_NextPart_000_0000_01C9FDAF.BE29BBC0
+Content-Type: text/html;
+	charset="Windows-1252"
+Content-Transfer-Encoding: quoted-printable
+Content-Location: http://www.kbdedit.com/manual/low_level_vk_list.html
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" =
+"http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
+<HTML><HEAD><TITLE>List of Virtual Key Codes</TITLE>
+<META http-equiv=3DContent-Language content=3Den-us>
+<META http-equiv=3DContent-Type content=3D"text/html; =
+charset=3Dwindows-1252"><LINK=20
+href=3D"../favicon.ico" rel=3D"SHORTCUT ICON"><LINK=20
+href=3D"http://www.kbdedit.com/main.css" type=3Dtext/css =
+rel=3Dstylesheet>
+<META content=3D"tb, default" name=3D"Microsoft Border">
+<META content=3D"MSHTML 6.00.6000.16850" name=3DGENERATOR></HEAD>
+<BODY><!--msnavigation-->
+<TABLE cellSpacing=3D0 cellPadding=3D0 width=3D"100%" border=3D0>
+  <TBODY>
+  <TR>
+    <TD>
+      <DIV align=3Dleft>
+      <TABLE id=3DAutoNumber2 style=3D"BORDER-COLLAPSE: collapse"=20
+      borderColor=3D#111111 cellSpacing=3D0 cellPadding=3D0 =
+width=3D"100%" border=3D0>
+        <TBODY>
+        <TR>
+          <TD align=3Dleft><IMG=20
+            style=3D"BORDER-TOP-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px; =
+BORDER-BOTTOM-WIDTH: 0px; BORDER-RIGHT-WIDTH: 0px"=20
+            height=3D42 hspace=3D0 =
+src=3D"http://www.kbdedit.com/img/logo.PNG"=20
+            width=3D200 border=3D0></TD>
+          <TD align=3Dright><NOBR>[<A=20
+            =
+href=3D"http://www.kbdedit.com/">Home</A>]</NOBR>&nbsp;<NOBR>[<A=20
+            href=3D"http://www.kbdedit.com/online_purchase.html"=20
+            target=3D"">Purchase</A>]</NOBR>&nbsp;<NOBR>[<A=20
+            href=3D"http://www.kbdedit.com/demo.html"=20
+            target=3D"">Download</A>]</NOBR>&nbsp;<NOBR><A=20
+            =
+href=3D"http://www.kbdedit.com/manual/manual_index.html">[Manual]</A></NO=
+BR>&nbsp;<NOBR>[<A=20
+            href=3D"http://www.kbdedit.com/Acknowledgements.html"=20
+            target=3D"">Acknowledgements</A>]</NOBR>&nbsp;<NOBR>[<A=20
+            href=3D"http://www.kbdedit.com/sitemap.html"=20
+            target=3D"">Sitemap</A>]</NOBR>&nbsp;<NOBR>[<A=20
+            href=3D"http://www.kbdedit.com/release_notes.html"=20
+            target=3D"">Release&nbsp;Notes</A>]</NOBR>&nbsp;<NOBR>[<A=20
+            =
+href=3D"http://www.kbdedit.com/manual/FAQ.html">FAQ</A>]</NOBR></TD></TR>=
+</TBODY></TABLE></DIV>
+      <P align=3Dcenter><NOBR>[&nbsp;<A=20
+      href=3D"http://www.kbdedit.com/manual/low_level.html"=20
+      target=3D"">Up</A>&nbsp;]</NOBR> <NOBR>[&nbsp;<A=20
+      =
+href=3D"http://www.kbdedit.com/manual/low_level_edit_vk_mappings.html"=20
+      target=3D"">Editing&nbsp;VK&nbsp;Mappings</A>&nbsp;]</NOBR> =
+<NOBR>[&nbsp;<A=20
+      href=3D"http://www.kbdedit.com/manual/low_level_modifiers.html"=20
+      target=3D"">Modifiers</A>&nbsp;]</NOBR>=20
+      =
+<NOBR>[&nbsp;List&nbsp;of&nbsp;Virtual&nbsp;Key&nbsp;Codes&nbsp;]</NOBR><=
+/P></TD></TR><!--msnavigation--></TBODY></TABLE><!--msnavigation-->
+<TABLE dir=3Dltr cellSpacing=3D0 cellPadding=3D0 width=3D"100%" =
+border=3D0>
+  <TBODY>
+  <TR><!--msnavigation-->
+    <TD vAlign=3Dtop>
+      <H2>List of Virtual Key Codes</H2>
+      <P>Following is a full list of VK codes that can be assigned to =
+physical=20
+      keys ("scan codes") in the <A=20
+      href=3D"http://www.kbdedit.com/manual/low_level.html">Low-level=20
+      editor</A>.</P>
+      <P>The list is divided in two categories:</P>
+      <OL>
+        <LI>"Mappable" codes, to which Unicode characters can be =
+assigned in the=20
+        <A =
+href=3D"http://www.kbdedit.com/manual/high_level.html">High-level=20
+        editor</A>=20
+        <LI>"Non-mappable" codes (modifiers,&nbsp;special keys) =
+</LI></OL>
+      <TABLE style=3D"BORDER-COLLAPSE: collapse" borderColor=3D#111111 =
+cellSpacing=3D0=20
+      width=3D"100%" border=3D1>
+        <TBODY>
+        <TR>
+          <TH width=3D"50%"><B>"Mappable" codes</B></TH>
+          <TH width=3D"50%"><B>"Non-mappable" codes</B></TH></TR>
+        <TR>
+          <TD vAlign=3Dtop>
+            <TABLE style=3D"BORDER-COLLAPSE: collapse" =
+borderColor=3D#111111=20
+            cellSpacing=3D0 width=3D"100%" border=3D0>
+              <TBODY>
+              <TR>
+                <TD><B>Name</B></TD>
+                <TD><B>Numeric value</B></TD>
+                <TD><B>Description</B></TD></TR>
+              <TR>
+                <TD>VK_ABNT_C1</TD>
+                <TD>0xC1</TD>
+                <TD>Abnt C1</TD></TR>
+              <TR>
+                <TD>VK_ABNT_C2</TD>
+                <TD>0xC2</TD>
+                <TD>Abnt C2</TD></TR>
+              <TR>
+                <TD>VK_ADD</TD>
+                <TD>0x6B</TD>
+                <TD>Numpad +</TD></TR>
+              <TR>
+                <TD>VK_ATTN</TD>
+                <TD>0xF6</TD>
+                <TD>Attn</TD></TR>
+              <TR>
+                <TD>VK_BACK</TD>
+                <TD>0x08</TD>
+                <TD>Backspace</TD></TR>
+              <TR>
+                <TD>VK_CANCEL</TD>
+                <TD>0x03</TD>
+                <TD>Break</TD></TR>
+              <TR>
+                <TD>VK_CLEAR</TD>
+                <TD>0x0C</TD>
+                <TD>Clear</TD></TR>
+              <TR>
+                <TD>VK_CRSEL</TD>
+                <TD>0xF7</TD>
+                <TD>Cr Sel</TD></TR>
+              <TR>
+                <TD>VK_DECIMAL</TD>
+                <TD>0x6E</TD>
+                <TD>Numpad .</TD></TR>
+              <TR>
+                <TD>VK_DIVIDE</TD>
+                <TD>0x6F</TD>
+                <TD>Numpad /</TD></TR>
+              <TR>
+                <TD>VK_EREOF</TD>
+                <TD>0xF9</TD>
+                <TD>Er Eof</TD></TR>
+              <TR>
+                <TD>VK_ESCAPE</TD>
+                <TD>0x1B</TD>
+                <TD>Esc</TD></TR>
+              <TR>
+                <TD>VK_EXECUTE</TD>
+                <TD>0x2B</TD>
+                <TD>Execute</TD></TR>
+              <TR>
+                <TD>VK_EXSEL</TD>
+                <TD>0xF8</TD>
+                <TD>Ex Sel</TD></TR>
+              <TR>
+                <TD>VK_ICO_CLEAR</TD>
+                <TD>0xE6</TD>
+                <TD>IcoClr</TD></TR>
+              <TR>
+                <TD>VK_ICO_HELP</TD>
+                <TD>0xE3</TD>
+                <TD>IcoHlp</TD></TR>
+              <TR>
+                <TD>VK_KEY_0</TD>
+                <TD>0x30 ('0')</TD>
+                <TD>0</TD></TR>
+              <TR>
+                <TD>VK_KEY_1</TD>
+                <TD>0x31 ('1')</TD>
+                <TD>1</TD></TR>
+              <TR>
+                <TD>VK_KEY_2</TD>
+                <TD>0x32 ('2')</TD>
+                <TD>2</TD></TR>
+              <TR>
+                <TD>VK_KEY_3</TD>
+                <TD>0x33 ('3')</TD>
+                <TD>3</TD></TR>
+              <TR>
+                <TD>VK_KEY_4</TD>
+                <TD>0x34 ('4')</TD>
+                <TD>4</TD></TR>
+              <TR>
+                <TD>VK_KEY_5</TD>
+                <TD>0x35 ('5')</TD>
+                <TD>5</TD></TR>
+              <TR>
+                <TD>VK_KEY_6</TD>
+                <TD>0x36 ('6')</TD>
+                <TD>6</TD></TR>
+              <TR>
+                <TD>VK_KEY_7</TD>
+                <TD>0x37 ('7')</TD>
+                <TD>7</TD></TR>
+              <TR>
+                <TD>VK_KEY_8</TD>
+                <TD>0x38 ('8')</TD>
+                <TD>8</TD></TR>
+              <TR>
+                <TD>VK_KEY_9</TD>
+                <TD>0x39 ('9')</TD>
+                <TD>9</TD></TR>
+              <TR>
+                <TD>VK_KEY_A</TD>
+                <TD>0x41 ('A')</TD>
+                <TD>A</TD></TR>
+              <TR>
+                <TD>VK_KEY_B</TD>
+                <TD>0x42 ('B')</TD>
+                <TD>B</TD></TR>
+              <TR>
+                <TD>VK_KEY_C</TD>
+                <TD>0x43 ('C')</TD>
+                <TD>C</TD></TR>
+              <TR>
+                <TD>VK_KEY_D</TD>
+                <TD>0x44 ('D')</TD>
+                <TD>D</TD></TR>
+              <TR>
+                <TD>VK_KEY_E</TD>
+                <TD>0x45 ('E')</TD>
+                <TD>E</TD></TR>
+              <TR>
+                <TD>VK_KEY_F</TD>
+                <TD>0x46 ('F')</TD>
+                <TD>F</TD></TR>
+              <TR>
+                <TD>VK_KEY_G</TD>
+                <TD>0x47 ('G')</TD>
+                <TD>G</TD></TR>
+              <TR>
+                <TD>VK_KEY_H</TD>
+                <TD>0x48 ('H')</TD>
+                <TD>H</TD></TR>
+              <TR>
+                <TD>VK_KEY_I</TD>
+                <TD>0x49 ('I')</TD>
+                <TD>I</TD></TR>
+              <TR>
+                <TD>VK_KEY_J</TD>
+                <TD>0x4A ('J')</TD>
+                <TD>J</TD></TR>
+              <TR>
+                <TD>VK_KEY_K</TD>
+                <TD>0x4B ('K')</TD>
+                <TD>K</TD></TR>
+              <TR>
+                <TD>VK_KEY_L</TD>
+                <TD>0x4C ('L')</TD>
+                <TD>L</TD></TR>
+              <TR>
+                <TD>VK_KEY_M</TD>
+                <TD>0x4D ('M')</TD>
+                <TD>M</TD></TR>
+              <TR>
+                <TD>VK_KEY_N</TD>
+                <TD>0x4E ('N')</TD>
+                <TD>N</TD></TR>
+              <TR>
+                <TD>VK_KEY_O</TD>
+                <TD>0x4F ('O')</TD>
+                <TD>O</TD></TR>
+              <TR>
+                <TD>VK_KEY_P</TD>
+                <TD>0x50 ('P')</TD>
+                <TD>P</TD></TR>
+              <TR>
+                <TD>VK_KEY_Q</TD>
+                <TD>0x51 ('Q')</TD>
+                <TD>Q</TD></TR>
+              <TR>
+                <TD>VK_KEY_R</TD>
+                <TD>0x52 ('R')</TD>
+                <TD>R</TD></TR>
+              <TR>
+                <TD>VK_KEY_S</TD>
+                <TD>0x53 ('S')</TD>
+                <TD>S</TD></TR>
+              <TR>
+                <TD>VK_KEY_T</TD>
+                <TD>0x54 ('T')</TD>
+                <TD>T</TD></TR>
+              <TR>
+                <TD>VK_KEY_U</TD>
+                <TD>0x55 ('U')</TD>
+                <TD>U</TD></TR>
+              <TR>
+                <TD>VK_KEY_V</TD>
+                <TD>0x56 ('V')</TD>
+                <TD>V</TD></TR>
+              <TR>
+                <TD>VK_KEY_W</TD>
+                <TD>0x57 ('W')</TD>
+                <TD>W</TD></TR>
+              <TR>
+                <TD>VK_KEY_X</TD>
+                <TD>0x58 ('X')</TD>
+                <TD>X</TD></TR>
+              <TR>
+                <TD>VK_KEY_Y</TD>
+                <TD>0x59 ('Y')</TD>
+                <TD>Y</TD></TR>
+              <TR>
+                <TD>VK_KEY_Z</TD>
+                <TD>0x5A ('Z')</TD>
+                <TD>Z</TD></TR>
+              <TR>
+                <TD>VK_MULTIPLY</TD>
+                <TD>0x6A</TD>
+                <TD>Numpad *</TD></TR>
+              <TR>
+                <TD>VK_NONAME</TD>
+                <TD>0xFC</TD>
+                <TD>NoName</TD></TR>
+              <TR>
+                <TD>VK_NUMPAD0</TD>
+                <TD>0x60</TD>
+                <TD>Numpad 0</TD></TR>
+              <TR>
+                <TD>VK_NUMPAD1</TD>
+                <TD>0x61</TD>
+                <TD>Numpad 1</TD></TR>
+              <TR>
+                <TD>VK_NUMPAD2</TD>
+                <TD>0x62</TD>
+                <TD>Numpad 2</TD></TR>
+              <TR>
+                <TD>VK_NUMPAD3</TD>
+                <TD>0x63</TD>
+                <TD>Numpad 3</TD></TR>
+              <TR>
+                <TD>VK_NUMPAD4</TD>
+                <TD>0x64</TD>
+                <TD>Numpad 4</TD></TR>
+              <TR>
+                <TD>VK_NUMPAD5</TD>
+                <TD>0x65</TD>
+                <TD>Numpad 5</TD></TR>
+              <TR>
+                <TD>VK_NUMPAD6</TD>
+                <TD>0x66</TD>
+                <TD>Numpad 6</TD></TR>
+              <TR>
+                <TD>VK_NUMPAD7</TD>
+                <TD>0x67</TD>
+                <TD>Numpad 7</TD></TR>
+              <TR>
+                <TD>VK_NUMPAD8</TD>
+                <TD>0x68</TD>
+                <TD>Numpad 8</TD></TR>
+              <TR>
+                <TD>VK_NUMPAD9</TD>
+                <TD>0x69</TD>
+                <TD>Numpad 9</TD></TR>
+              <TR>
+                <TD>VK_OEM_1</TD>
+                <TD>0xBA</TD>
+                <TD>OEM_1 (: ;)</TD></TR>
+              <TR>
+                <TD>VK_OEM_102</TD>
+                <TD>0xE2</TD>
+                <TD>OEM_102 (&gt; &lt;)</TD></TR>
+              <TR>
+                <TD>VK_OEM_2</TD>
+                <TD>0xBF</TD>
+                <TD>OEM_2 (? /)</TD></TR>
+              <TR>
+                <TD>VK_OEM_3</TD>
+                <TD>0xC0</TD>
+                <TD>OEM_3 (~ `)</TD></TR>
+              <TR>
+                <TD>VK_OEM_4</TD>
+                <TD>0xDB</TD>
+                <TD>OEM_4 ({ [)</TD></TR>
+              <TR>
+                <TD>VK_OEM_5</TD>
+                <TD>0xDC</TD>
+                <TD>OEM_5 (| \)</TD></TR>
+              <TR>
+                <TD>VK_OEM_6</TD>
+                <TD>0xDD</TD>
+                <TD>OEM_6 (} ])</TD></TR>
+              <TR>
+                <TD>VK_OEM_7</TD>
+                <TD>0xDE</TD>
+                <TD>OEM_7 (" ')</TD></TR>
+              <TR>
+                <TD>VK_OEM_8</TD>
+                <TD>0xDF</TD>
+                <TD>OEM_8 (=A7 !)</TD></TR>
+              <TR>
+                <TD>VK_OEM_ATTN</TD>
+                <TD>0xF0</TD>
+                <TD>Oem Attn</TD></TR>
+              <TR>
+                <TD>VK_OEM_AUTO</TD>
+                <TD>0xF3</TD>
+                <TD>Auto</TD></TR>
+              <TR>
+                <TD>VK_OEM_AX</TD>
+                <TD>0xE1</TD>
+                <TD>Ax</TD></TR>
+              <TR>
+                <TD>VK_OEM_BACKTAB</TD>
+                <TD>0xF5</TD>
+                <TD>Back Tab</TD></TR>
+              <TR>
+                <TD>VK_OEM_CLEAR</TD>
+                <TD>0xFE</TD>
+                <TD>OemClr</TD></TR>
+              <TR>
+                <TD>VK_OEM_COMMA</TD>
+                <TD>0xBC</TD>
+                <TD>OEM_COMMA (&lt; ,)</TD></TR>
+              <TR>
+                <TD>VK_OEM_COPY</TD>
+                <TD>0xF2</TD>
+                <TD>Copy</TD></TR>
+              <TR>
+                <TD>VK_OEM_CUSEL</TD>
+                <TD>0xEF</TD>
+                <TD>Cu Sel</TD></TR>
+              <TR>
+                <TD>VK_OEM_ENLW</TD>
+                <TD>0xF4</TD>
+                <TD>Enlw</TD></TR>
+              <TR>
+                <TD>VK_OEM_FINISH</TD>
+                <TD>0xF1</TD>
+                <TD>Finish</TD></TR>
+              <TR>
+                <TD>VK_OEM_FJ_LOYA</TD>
+                <TD>0x95</TD>
+                <TD>Loya</TD></TR>
+              <TR>
+                <TD>VK_OEM_FJ_MASSHOU</TD>
+                <TD>0x93</TD>
+                <TD>Mashu</TD></TR>
+              <TR>
+                <TD>VK_OEM_FJ_ROYA</TD>
+                <TD>0x96</TD>
+                <TD>Roya</TD></TR>
+              <TR>
+                <TD>VK_OEM_FJ_TOUROKU</TD>
+                <TD>0x94</TD>
+                <TD>Touroku</TD></TR>
+              <TR>
+                <TD>VK_OEM_JUMP</TD>
+                <TD>0xEA</TD>
+                <TD>Jump</TD></TR>
+              <TR>
+                <TD>VK_OEM_MINUS</TD>
+                <TD>0xBD</TD>
+                <TD>OEM_MINUS (_ -)</TD></TR>
+              <TR>
+                <TD>VK_OEM_PA1</TD>
+                <TD>0xEB</TD>
+                <TD>OemPa1</TD></TR>
+              <TR>
+                <TD>VK_OEM_PA2</TD>
+                <TD>0xEC</TD>
+                <TD>OemPa2</TD></TR>
+              <TR>
+                <TD>VK_OEM_PA3</TD>
+                <TD>0xED</TD>
+                <TD>OemPa3</TD></TR>
+              <TR>
+                <TD>VK_OEM_PERIOD</TD>
+                <TD>0xBE</TD>
+                <TD>OEM_PERIOD (&gt; .)</TD></TR>
+              <TR>
+                <TD>VK_OEM_PLUS</TD>
+                <TD>0xBB</TD>
+                <TD>OEM_PLUS (+ =3D)</TD></TR>
+              <TR>
+                <TD>VK_OEM_RESET</TD>
+                <TD>0xE9</TD>
+                <TD>Reset</TD></TR>
+              <TR>
+                <TD>VK_OEM_WSCTRL</TD>
+                <TD>0xEE</TD>
+                <TD>WsCtrl</TD></TR>
+              <TR>
+                <TD>VK_PA1</TD>
+                <TD>0xFD</TD>
+                <TD>Pa1</TD></TR>
+              <TR>
+                <TD>VK_PACKET</TD>
+                <TD>0xE7</TD>
+                <TD>Packet</TD></TR>
+              <TR>
+                <TD>VK_PLAY</TD>
+                <TD>0xFA</TD>
+                <TD>Play</TD></TR>
+              <TR>
+                <TD>VK_PROCESSKEY</TD>
+                <TD>0xE5</TD>
+                <TD>Process</TD></TR>
+              <TR>
+                <TD>VK_RETURN</TD>
+                <TD>0x0D</TD>
+                <TD>Enter</TD></TR>
+              <TR>
+                <TD>VK_SELECT</TD>
+                <TD>0x29</TD>
+                <TD>Select</TD></TR>
+              <TR>
+                <TD>VK_SEPARATOR</TD>
+                <TD>0x6C</TD>
+                <TD>Separator</TD></TR>
+              <TR>
+                <TD>VK_SPACE</TD>
+                <TD>0x20</TD>
+                <TD>Space</TD></TR>
+              <TR>
+                <TD>VK_SUBTRACT</TD>
+                <TD>0x6D</TD>
+                <TD>Num -</TD></TR>
+              <TR>
+                <TD>VK_TAB</TD>
+                <TD>0x09</TD>
+                <TD>Tab</TD></TR>
+              <TR>
+                <TD>VK_ZOOM</TD>
+                <TD>0xFB</TD>
+                <TD>Zoom</TD></TR></TBODY></TABLE></TD>
+          <TD vAlign=3Dtop>
+            <TABLE style=3D"BORDER-COLLAPSE: collapse" =
+borderColor=3D#111111=20
+            cellSpacing=3D0 width=3D"100%" border=3D0>
+              <TBODY>
+              <TR>
+                <TD><B>Name</B></TD>
+                <TD><B>Numeric value</B></TD>
+                <TD><B>Description</B></TD></TR>
+              <TR>
+                <TD>VK__none_</TD>
+                <TD>0xFF</TD>
+                <TD>no VK mapping</TD></TR>
+              <TR>
+                <TD>VK_ACCEPT</TD>
+                <TD>0x1E</TD>
+                <TD>Accept</TD></TR>
+              <TR>
+                <TD>VK_APPS</TD>
+                <TD>0x5D</TD>
+                <TD>Context Menu</TD></TR>
+              <TR>
+                <TD>VK_BROWSER_BACK</TD>
+                <TD>0xA6</TD>
+                <TD>Browser Back</TD></TR>
+              <TR>
+                <TD>VK_BROWSER_FAVORITES</TD>
+                <TD>0xAB</TD>
+                <TD>Browser Favorites</TD></TR>
+              <TR>
+                <TD>VK_BROWSER_FORWARD</TD>
+                <TD>0xA7</TD>
+                <TD>Browser Forward</TD></TR>
+              <TR>
+                <TD>VK_BROWSER_HOME</TD>
+                <TD>0xAC</TD>
+                <TD>Browser Home</TD></TR>
+              <TR>
+                <TD>VK_BROWSER_REFRESH</TD>
+                <TD>0xA8</TD>
+                <TD>Browser Refresh</TD></TR>
+              <TR>
+                <TD>VK_BROWSER_SEARCH</TD>
+                <TD>0xAA</TD>
+                <TD>Browser Search</TD></TR>
+              <TR>
+                <TD>VK_BROWSER_STOP</TD>
+                <TD>0xA9</TD>
+                <TD>Browser Stop</TD></TR>
+              <TR>
+                <TD>VK_CAPITAL</TD>
+                <TD>0x14</TD>
+                <TD>Caps Lock</TD></TR>
+              <TR>
+                <TD>VK_CONVERT</TD>
+                <TD>0x1C</TD>
+                <TD>Convert</TD></TR>
+              <TR>
+                <TD>VK_DELETE</TD>
+                <TD>0x2E</TD>
+                <TD>Delete</TD></TR>
+              <TR>
+                <TD>VK_DOWN</TD>
+                <TD>0x28</TD>
+                <TD>Arrow Down</TD></TR>
+              <TR>
+                <TD>VK_END</TD>
+                <TD>0x23</TD>
+                <TD>End</TD></TR>
+              <TR>
+                <TD>VK_F1</TD>
+                <TD>0x70</TD>
+                <TD>F1</TD></TR>
+              <TR>
+                <TD>VK_F10</TD>
+                <TD>0x79</TD>
+                <TD>F10</TD></TR>
+              <TR>
+                <TD>VK_F11</TD>
+                <TD>0x7A</TD>
+                <TD>F11</TD></TR>
+              <TR>
+                <TD>VK_F12</TD>
+                <TD>0x7B</TD>
+                <TD>F12</TD></TR>
+              <TR>
+                <TD>VK_F13</TD>
+                <TD>0x7C</TD>
+                <TD>F13</TD></TR>
+              <TR>
+                <TD>VK_F14</TD>
+                <TD>0x7D</TD>
+                <TD>F14</TD></TR>
+              <TR>
+                <TD>VK_F15</TD>
+                <TD>0x7E</TD>
+                <TD>F15</TD></TR>
+              <TR>
+                <TD>VK_F16</TD>
+                <TD>0x7F</TD>
+                <TD>F16</TD></TR>
+              <TR>
+                <TD>VK_F17</TD>
+                <TD>0x80</TD>
+                <TD>F17</TD></TR>
+              <TR>
+                <TD>VK_F18</TD>
+                <TD>0x81</TD>
+                <TD>F18</TD></TR>
+              <TR>
+                <TD>VK_F19</TD>
+                <TD>0x82</TD>
+                <TD>F19</TD></TR>
+              <TR>
+                <TD>VK_F2</TD>
+                <TD>0x71</TD>
+                <TD>F2</TD></TR>
+              <TR>
+                <TD>VK_F20</TD>
+                <TD>0x83</TD>
+                <TD>F20</TD></TR>
+              <TR>
+                <TD>VK_F21</TD>
+                <TD>0x84</TD>
+                <TD>F21</TD></TR>
+              <TR>
+                <TD>VK_F22</TD>
+                <TD>0x85</TD>
+                <TD>F22</TD></TR>
+              <TR>
+                <TD>VK_F23</TD>
+                <TD>0x86</TD>
+                <TD>F23</TD></TR>
+              <TR>
+                <TD>VK_F24</TD>
+                <TD>0x87</TD>
+                <TD>F24</TD></TR>
+              <TR>
+                <TD>VK_F3</TD>
+                <TD>0x72</TD>
+                <TD>F3</TD></TR>
+              <TR>
+                <TD>VK_F4</TD>
+                <TD>0x73</TD>
+                <TD>F4</TD></TR>
+              <TR>
+                <TD>VK_F5</TD>
+                <TD>0x74</TD>
+                <TD>F5</TD></TR>
+              <TR>
+                <TD>VK_F6</TD>
+                <TD>0x75</TD>
+                <TD>F6</TD></TR>
+              <TR>
+                <TD>VK_F7</TD>
+                <TD>0x76</TD>
+                <TD>F7</TD></TR>
+              <TR>
+                <TD>VK_F8</TD>
+                <TD>0x77</TD>
+                <TD>F8</TD></TR>
+              <TR>
+                <TD>VK_F9</TD>
+                <TD>0x78</TD>
+                <TD>F9</TD></TR>
+              <TR>
+                <TD>VK_FINAL</TD>
+                <TD>0x18</TD>
+                <TD>Final</TD></TR>
+              <TR>
+                <TD>VK_HELP</TD>
+                <TD>0x2F</TD>
+                <TD>Help</TD></TR>
+              <TR>
+                <TD>VK_HOME</TD>
+                <TD>0x24</TD>
+                <TD>Home</TD></TR>
+              <TR>
+                <TD>VK_ICO_00</TD>
+                <TD>0xE4</TD>
+                <TD>Ico00 <SPAN style=3D"VERTICAL-ALIGN: super"><A=20
+                  =
+href=3D"http://www.kbdedit.com/manual/low_level_vk_list.html#*">*</A></SP=
+AN></TD></TR>
+              <TR>
+                <TD>VK_INSERT</TD>
+                <TD>0x2D</TD>
+                <TD>Insert</TD></TR>
+              <TR>
+                <TD>VK_JUNJA</TD>
+                <TD>0x17</TD>
+                <TD>Junja</TD></TR>
+              <TR>
+                <TD>VK_KANA</TD>
+                <TD>0x15</TD>
+                <TD>Kana</TD></TR>
+              <TR>
+                <TD>VK_KANJI</TD>
+                <TD>0x19</TD>
+                <TD>Kanji</TD></TR>
+              <TR>
+                <TD>VK_LAUNCH_APP1</TD>
+                <TD>0xB6</TD>
+                <TD>App1</TD></TR>
+              <TR>
+                <TD>VK_LAUNCH_APP2</TD>
+                <TD>0xB7</TD>
+                <TD>App2</TD></TR>
+              <TR>
+                <TD>VK_LAUNCH_MAIL</TD>
+                <TD>0xB4</TD>
+                <TD>Mail</TD></TR>
+              <TR>
+                <TD>VK_LAUNCH_MEDIA_SELECT</TD>
+                <TD>0xB5</TD>
+                <TD>Media</TD></TR>
+              <TR>
+                <TD>VK_LBUTTON</TD>
+                <TD>0x01</TD>
+                <TD>Left Button <SPAN style=3D"VERTICAL-ALIGN: super"><A =
+
+                  =
+href=3D"http://www.kbdedit.com/manual/low_level_vk_list.html#**">**</A></=
+SPAN></TD></TR>
+              <TR>
+                <TD>VK_LCONTROL</TD>
+                <TD>0xA2</TD>
+                <TD>Left Ctrl</TD></TR>
+              <TR>
+                <TD>VK_LEFT</TD>
+                <TD>0x25</TD>
+                <TD>Arrow Left</TD></TR>
+              <TR>
+                <TD>VK_LMENU</TD>
+                <TD>0xA4</TD>
+                <TD>Left Alt</TD></TR>
+              <TR>
+                <TD>VK_LSHIFT</TD>
+                <TD>0xA0</TD>
+                <TD>Left Shift</TD></TR>
+              <TR>
+                <TD>VK_LWIN</TD>
+                <TD>0x5B</TD>
+                <TD>Left Win</TD></TR>
+              <TR>
+                <TD>VK_MBUTTON</TD>
+                <TD>0x04</TD>
+                <TD>Middle Button <SPAN style=3D"VERTICAL-ALIGN: =
+super"><A=20
+                  =
+href=3D"http://www.kbdedit.com/manual/low_level_vk_list.html#**">**</A></=
+SPAN></TD></TR>
+              <TR>
+                <TD>VK_MEDIA_NEXT_TRACK</TD>
+                <TD>0xB0</TD>
+                <TD>Next Track</TD></TR>
+              <TR>
+                <TD>VK_MEDIA_PLAY_PAUSE</TD>
+                <TD>0xB3</TD>
+                <TD>Play / Pause</TD></TR>
+              <TR>
+                <TD>VK_MEDIA_PREV_TRACK</TD>
+                <TD>0xB1</TD>
+                <TD>Previous Track</TD></TR>
+              <TR>
+                <TD>VK_MEDIA_STOP</TD>
+                <TD>0xB2</TD>
+                <TD>Stop</TD></TR>
+              <TR>
+                <TD>VK_MODECHANGE</TD>
+                <TD>0x1F</TD>
+                <TD>Mode Change</TD></TR>
+              <TR>
+                <TD>VK_NEXT</TD>
+                <TD>0x22</TD>
+                <TD>Page Down</TD></TR>
+              <TR>
+                <TD>VK_NONCONVERT</TD>
+                <TD>0x1D</TD>
+                <TD>Non Convert</TD></TR>
+              <TR>
+                <TD>VK_NUMLOCK</TD>
+                <TD>0x90</TD>
+                <TD>Num Lock</TD></TR>
+              <TR>
+                <TD>VK_OEM_FJ_JISHO</TD>
+                <TD>0x92</TD>
+                <TD>Jisho</TD></TR>
+              <TR>
+                <TD>VK_PAUSE</TD>
+                <TD>0x13</TD>
+                <TD>Pause</TD></TR>
+              <TR>
+                <TD>VK_PRINT</TD>
+                <TD>0x2A</TD>
+                <TD>Print</TD></TR>
+              <TR>
+                <TD>VK_PRIOR</TD>
+                <TD>0x21</TD>
+                <TD>Page Up</TD></TR>
+              <TR>
+                <TD>VK_RBUTTON</TD>
+                <TD>0x02</TD>
+                <TD>Right Button <SPAN style=3D"VERTICAL-ALIGN: =
+super"><A=20
+                  =
+href=3D"http://www.kbdedit.com/manual/low_level_vk_list.html#**">**</A></=
+SPAN></TD></TR>
+              <TR>
+                <TD>VK_RCONTROL</TD>
+                <TD>0xA3</TD>
+                <TD>Right Ctrl</TD></TR>
+              <TR>
+                <TD>VK_RIGHT</TD>
+                <TD>0x27</TD>
+                <TD>Arrow Right</TD></TR>
+              <TR>
+                <TD>VK_RMENU</TD>
+                <TD>0xA5</TD>
+                <TD>Right Alt</TD></TR>
+              <TR>
+                <TD>VK_RSHIFT</TD>
+                <TD>0xA1</TD>
+                <TD>Right Shift</TD></TR>
+              <TR>
+                <TD>VK_RWIN</TD>
+                <TD>0x5C</TD>
+                <TD>Right Win</TD></TR>
+              <TR>
+                <TD>VK_SCROLL</TD>
+                <TD>0x91</TD>
+                <TD>Scrol Lock</TD></TR>
+              <TR>
+                <TD>VK_SLEEP</TD>
+                <TD>0x5F</TD>
+                <TD>Sleep</TD></TR>
+              <TR>
+                <TD>VK_SNAPSHOT</TD>
+                <TD>0x2C</TD>
+                <TD>Print Screen</TD></TR>
+              <TR>
+                <TD>VK_UP</TD>
+                <TD>0x26</TD>
+                <TD>Arrow Up</TD></TR>
+              <TR>
+                <TD>VK_VOLUME_DOWN</TD>
+                <TD>0xAE</TD>
+                <TD>Volume Down</TD></TR>
+              <TR>
+                <TD>VK_VOLUME_MUTE</TD>
+                <TD>0xAD</TD>
+                <TD>Volume Mute</TD></TR>
+              <TR>
+                <TD>VK_VOLUME_UP</TD>
+                <TD>0xAF</TD>
+                <TD>Volume Up</TD></TR>
+              <TR>
+                <TD>VK_XBUTTON1</TD>
+                <TD>0x05</TD>
+                <TD>X Button 1 <SPAN style=3D"VERTICAL-ALIGN: super"><A=20
+                  =
+href=3D"http://www.kbdedit.com/manual/low_level_vk_list.html#**">**</A></=
+SPAN></TD></TR>
+              <TR>
+                <TD>VK_XBUTTON2</TD>
+                <TD>0x06</TD>
+                <TD>X Button 2 <SPAN style=3D"VERTICAL-ALIGN: super"><A=20
+                  =
+href=3D"http://www.kbdedit.com/manual/low_level_vk_list.html#**">**</A></=
+SPAN></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+      <P><A name=3D*>*</A>) VK_ICO_00 virtual code produces '00' (two =
+zeros) when=20
+      pressed. Windows does not allow mapping of arbitrary Unicode =
+codepoints to=20
+      this VK code.</P>
+      <P><A name=3D**>**</A>) "mouse button" quasi VK codes are =
+generated by=20
+      Windows when user clicks left/middle/right/X1/X2 mouse buttons. =
+KbdEdit=20
+      allows these codes to be assigned to physical keys, but such =
+mappings make=20
+      no sense: pressing a key with VK_LBUTTON assigned to it will NOT =
+make=20
+      Windows act as if physical mouse button was pressed.</P>
+      <P>Back to <A=20
+      =
+href=3D"http://www.kbdedit.com/manual/low_level_edit_vk_mappings.html">Ed=
+iting=20
+      Virtual Key mappings</A>,&nbsp; <A=20
+      href=3D"http://www.kbdedit.com/manual/low_level.html">Low-level=20
+      editor</A></P>
+      <P><A =
+href=3D"http://www.kbdedit.com/manual/manual_index.html">Manual=20
+      =
+index</A></P>&nbsp;<!--msnavigation--></TD></TR><!--msnavigation--></TBOD=
+Y></TABLE><!--msnavigation-->
+<TABLE cellSpacing=3D0 cellPadding=3D0 width=3D"100%" border=3D0>
+  <TBODY>
+  <TR>
+    <TD>
+      <P align=3Dright><I>Copyright =A9 KbdSoft =
+2007-2009</I></P></TD></TR><!--msnavigation--></TBODY></TABLE></BODY></HT=
+ML>
+
+------=_NextPart_000_0000_01C9FDAF.BE29BBC0
+Content-Type: image/png
+Content-Transfer-Encoding: base64
+Content-Location: http://www.kbdedit.com/img/logo.PNG
+
+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
+RK5CYII=
+
+------=_NextPart_000_0000_01C9FDAF.BE29BBC0
+Content-Type: text/css;
+	charset="gb2312"
+Content-Transfer-Encoding: quoted-printable
+Content-Location: http://www.kbdedit.com/main.css
+
+BODY {
+	FONT-SIZE: 90%; MARGIN: 1.5em; FONT-STYLE: normal; FONT-FAMILY: Arial, =
+Arial, Helvetica; BACKGROUND-COLOR: #f8f8f8
+}
+H1:first-line {
+	FONT-WEIGHT: lighter; FONT-SIZE: xx-large; LINE-HEIGHT: 1em; =
+FONT-FAMILY: Times; FONT-VARIANT: small-caps
+}
+H1 {
+	FONT-WEIGHT: normal; FONT-SIZE: large; COLOR: darkblue; LINE-HEIGHT: =
+1.5em; FONT-FAMILY: Arial, Arial, Helvetica; LETTER-SPACING: -0.05em
+}
+H2 {
+	MARGIN-TOP: 1.5em; FONT-SIZE: large; COLOR: darkblue; LINE-HEIGHT: =
+1.5em; FONT-FAMILY: Arial, Arial, Helvetica
+}
+H3 {
+	MARGIN-TOP: 1.5em; FONT-SIZE: medium; COLOR: darkblue; LINE-HEIGHT: =
+1.5em; FONT-FAMILY: Arial, Arial, Helvetica; LETTER-SPACING: 0.1em
+}
+H4 {
+	MARGIN-TOP: 1em; COLOR: darkblue; LINE-HEIGHT: 1em; FONT-FAMILY: Arial, =
+Arial, Helvetica
+}
+IMG {
+	BORDER-TOP-WIDTH: 10px; BORDER-LEFT-WIDTH: 20px; BORDER-LEFT-COLOR: =
+#f8f8f8; BORDER-BOTTOM-WIDTH: 10px; BORDER-BOTTOM-COLOR: #f8f8f8; =
+BORDER-TOP-COLOR: #f8f8f8; BORDER-RIGHT-WIDTH: 10px; BORDER-RIGHT-COLOR: =
+#f8f8f8
+}
+P {
+	FONT-STYLE: normal; FONT-FAMILY: Arial, Arial, Helvetica
+}
+LI {
+	FONT-STYLE: normal; FONT-FAMILY: Arial, Arial, Helvetica
+}
+TD {
+	FONT-STYLE: normal; FONT-FAMILY: Arial, Arial, Helvetica
+}
+
+------=_NextPart_000_0000_01C9FDAF.BE29BBC0--
