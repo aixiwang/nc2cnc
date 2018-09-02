@@ -1,5 +1,5 @@
 # nc2cnc
-A Windows version CNC tool set.
+Home made CNC tool set.
 
 
 # hardware connection
