@@ -1,5 +1,6 @@
 # nc2cnc
-A Windows version CNC tool.
+A Windows version CNC tool set.
+
 
 # hardware connection
 <pre><code>
