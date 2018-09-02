@@ -1,8 +1,8 @@
 # nc2cnc
-Home made CNC tool set.
+Home-made CNC tool set.
 
 
-# hardware connection
+# Wiring
 <pre><code>
 [nc2cnc run on PC with serial port ] ----- [sCNC board] ----- [Step motor driver] ---- [Step Motor]
 </code></pre>
